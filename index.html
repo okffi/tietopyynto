@@ -1,439 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
   <head>
     <meta charset="utf-8">
-    <title>Froide - Freedom Of Information Software</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Tietopyynto by okffi</title>
 
-    <!-- Le styles -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
-    <style>
-
-    /* GLOBAL STYLES
-    -------------------------------------------------- */
-    /* Padding below the footer and lighter body text */
-
-    body {
-      padding-bottom: 40px;
-      color: #5a5a5a;
-    }
-
-
-
-    /* CUSTOMIZE THE NAVBAR
-    -------------------------------------------------- */
-
-    /* Special class on .container surrounding .navbar, used for positioning it into place. */
-    .navbar-wrapper {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-      margin-top: 20px;
-      margin-bottom: -90px; /* Negative margin to pull up carousel. 90px is roughly margins and height of navbar. */
-    }
-    .navbar-wrapper .navbar {
-
-    }
-
-    /* Remove border and change up box shadow for more contrast */
-    .navbar .navbar-inner {
-      border: 0;
-      -webkit-box-shadow: 0 2px 10px rgba(0,0,0,.25);
-         -moz-box-shadow: 0 2px 10px rgba(0,0,0,.25);
-              box-shadow: 0 2px 10px rgba(0,0,0,.25);
-    }
-
-
-    /* CUSTOMIZE THE CAROUSEL
-    -------------------------------------------------- */
-
-    /* Carousel base class */
-    .carousel {
-      margin-bottom: 60px;
-    }
-
-    .carousel .container {
-      position: relative;
-      z-index: 9;
-    }
-
-    .carousel-control {
-      height: 80px;
-      margin-top: 0;
-      font-size: 120px;
-      text-shadow: 0 1px 1px rgba(0,0,0,.4);
-      background-color: transparent;
-      border: 0;
-      z-index: 10;
-    }
-
-    .carousel .item {
-      height: 500px;
-    }
-    .carousel img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      min-width: 100%;
-      height: 500px;
-    }
-
-    .carousel-caption {
-      background-color: transparent;
-      position: static;
-      padding: 0 20px;
-      margin-top: 200px;
-    }
-    .carousel-caption h1,
-    .carousel-caption .lead {
-      margin: 0;
-      line-height: 1.25;
-      color: #333;
-      text-shadow: 0 1px 1px rgba(0,0,0,.4);
-    }
-    .carousel-caption .btn {
-      margin-top: 10px;
-    }
-
-
-
-    /* MARKETING CONTENT
-    -------------------------------------------------- */
-
-    /* Center align the text within the three columns below the carousel */
-    .marketing .span4 {
-      text-align: center;
-    }
-    .marketing h2 {
-      font-weight: normal;
-    }
-    .marketing .span4 p {
-      margin-left: 10px;
-      margin-right: 10px;
-    }
-
-
-    /* Featurettes
-    ------------------------- */
-
-    .featurette-divider {
-      margin: 40px 0; /* Space out the Bootstrap <hr> more */
-    }
-    .featurette {
-      padding-top: 120px; /* Vertically center images part 1: add padding above and below text. */
-      overflow: hidden; /* Vertically center images part 2: clear their floats. */
-    }
-    .featurette-image {
-      margin-top: -120px; /* Vertically center images part 3: negative margin up the image the same amount of the padding to center it. */
-    }
-
-    /* Give some space on the sides of the floated elements so text doesn't run right into it. */
-    .featurette-image.pull-left {
-      margin-right: 40px;
-    }
-    .featurette-image.pull-right {
-      margin-left: 40px;
-    }
-
-    /* Thin out the marketing headings */
-    .featurette-heading {
-      font-size: 50px;
-      font-weight: 300;
-      line-height: 1;
-      letter-spacing: -1px;
-    }
-
-
-
-    /* RESPONSIVE CSS
-    -------------------------------------------------- */
-
-    @media (max-width: 979px) {
-
-      .container.navbar-wrapper {
-        margin-bottom: 0;
-        width: auto;
-      }
-      .navbar-inner {
-        border-radius: 0;
-        margin: -20px 0;
-      }
-
-      .carousel .item {
-        height: 500px;
-      }
-      .carousel img {
-        width: auto;
-        height: 500px;
-      }
-
-      .featurette {
-        height: auto;
-        padding: 0;
-      }
-      .featurette-image.pull-left,
-      .featurette-image.pull-right {
-        display: block;
-        float: none;
-        max-width: 40%;
-        margin: 0 auto 20px;
-      }
-    }
-
-
-    @media (max-width: 767px) {
-
-      .navbar-inner {
-        margin: -20px;
-      }
-
-      .carousel {
-        margin-left: -20px;
-        margin-right: -20px;
-      }
-      .carousel .container {
-
-      }
-      .carousel .item {
-        height: 300px;
-      }
-      .carousel img {
-        height: 300px;
-      }
-      .carousel-caption {
-        width: 100%;
-        padding: 0 70px;
-        margin-top: 50px;
-      }
-      .carousel-caption h1 {
-        font-size: 30px;
-      }
-      .carousel-caption .lead,
-      .carousel-caption .btn {
-        font-size: 18px;
-      }
-
-      .marketing .span4 + .span4 {
-        margin-top: 40px;
-      }
-
-      .featurette-heading {
-        font-size: 30px;
-      }
-      .featurette .lead {
-        font-size: 18px;
-        line-height: 1.5;
-      }
-
-    }
-
-    @media (max-width: 489px) {
-      .carousel .item {
-        height: 600px;
-      }
-      .carousel img {
-        height: 600px;
-      }
-
-    }
-
-    .jumbotron {
-      margin: 80px 0;
-      text-align: center;
-    }
-    .jumbotron h1 {
-      font-size: 100px;
-      line-height: 1;
-    }
-    .jumbotron .lead {
-      font-size: 24px;
-      line-height: 1.25;
-    }
-    .jumbotron .btn {
-      font-size: 21px;
-      padding: 14px 24px;
-    }
-
-    </style>
-
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
-      <script src="js/html5shiv.js"></script>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-    <!-- Fav and touch icons -->
-    <link rel="shortcut icon" href="img/favicon.png">
   </head>
-
   <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Tietopyynto</h1>
+        <p class="header"></p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/okffi/tietopyynto/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/okffi/tietopyynto/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/okffi/tietopyynto">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/okffi">okffi</a></p>
 
 
+      </header>
+      <section>
+        <h1>
+<a name="tietopyynt%C3%B6fi" class="anchor" href="#tietopyynt%C3%B6fi"><span class="octicon octicon-link"></span></a>Tietopyyntö.fi</h1>
 
-    <!-- NAVBAR
-    ================================================== -->
-    <div class="navbar-wrapper">
-      <!-- Wrap the .navbar in .container to center it within the absolutely positioned parent. -->
-      <div class="container">
+<p><img src="Tietopyynto1.png" alt=""></p>
 
-        <div class="navbar">
-          <div class="navbar-inner">
-            <!-- Responsive Navbar Part 1: Button for triggering responsive navbar (not covered in tutorial). Include responsive CSS to utilize. -->
-            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="brand" href="#">Froide</a>
-            <!-- Responsive Navbar Part 2: Place all navbar contents you want collapsed withing .navbar-collapse.collapse. -->
-            <div class="nav-collapse collapse">
-              <ul class="nav">
-                <li><a href="#features">Features</a></li>
-                <li><a href="http://froide.readthedocs.org">Documentation</a></li>
-                <li><a href="https://github.com/stefanw/froide">Source</a></li>
-              </ul>
-            </div><!--/.nav-collapse -->
-          </div><!-- /.navbar-inner -->
-        </div><!-- /.navbar -->
+<p><a href="http://www.youtube.com/watch?v=xvTc1HaMZn0">2 minuutin video Youtubessa</a></p>
 
-      </div> <!-- /.container -->
-    </div><!-- /.navbar-wrapper -->
+<p>Suomessa on loistava julkisuuslainsäädäntö, mutta se ei toimi. Professori Matti Wiberg teki opiskelijoineen kokeen - He lähettivät vuonna 2010 tietopyynnön yli 200:lle valtion virastolle - vain 10 prosenttia viranomaisista antoi tiedot julkisuuslain vaatimalla tavalla <a href="http://xn--hn-via.fi/boksi/20101219SalaajienValtakunta.png">HS 19.12.2012 / Matti Wiberg</a>. Katso myös <a href="http://www.hs.fi/paakirjoitukset/Viranomaisten+pit%C3%A4isi+toimia+avoimesti/a1305557919535">HS 16.3.2012 / Heikki Kuutti</a></p>
 
+<p>Ongelma on, ettei julkisuuslakia tunneta riittävän hyvin. Usein virastoissa ei tiedetä, mikä on julkista ja mikä ei. Kaiken kaikkiaan tietopyyntöjä tehdään vain vähän.</p>
 
+<p>Monella on se käsitys, että tietopyynnön laatiminen on vaikeaa ja sopii vain ammattilaisille tai vaatii pahimmillaan juristin apua. Tämä ei kuitenkaan pidä paikkaansa. Tietopyynnön tekeminen ei ole rakettitiedettä, eikä vaadi juristeja, mutta kynnystä pyyntöjen tekoon tulisi ehdottomasti madaltaa.</p>
 
-    <!-- Carousel
-    ================================================== -->
-    <div id="myCarousel" class="carousel slide">
-      <div class="carousel-inner">
-        <div class="item active">
-          <img src="img/background_top.jpg" alt="">
-          <div class="container">
-            <div class="carousel-caption span8">
-              <h1>Freedom of Information in Python/Django</h1>
-              <p class="lead">Make requests to public entities by email and track responses.<br/>
-                Customize your instance to fit your campaign for government transparency.</p>
-              <a class="btn btn-large btn-primary" href="http://froide.readthedocs.org/en/latest/gettingstarted/">
-                <i class="icon-arrow-right icon-white"></i>
-                Get Started!
-              </a>
-              <a class="btn btn-large" href="http://froide.readthedocs.org/en/latest/about/">
-                <i class="icon-info-sign"></i>
-                Learn more...
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+<p>Tietopyyntö.fi on idea verkkopalvelusta, joka opastaa julkisuuslain mukaisen tietopyynnön tekemisessä. Palvelu mahdollistaisi myös joukkoistetut tietopyynnöt sekä pyyntöjen tuloksena saadun datan julkaisemisen.</p>
 
+<p>Tietopyyntö.fi:n konsepti on äärimmäisen yksinkertainen ja maailmalla jo toimivaksi testattu. Esim. Briteissä 15% keskushallinolle osoitetuista tietopyynnöistä tehdään vastaavan <a href="https://www.whatdotheyknow.com/">What Do They Know</a> -sivuston kautta.</p>
 
+<p>Tietopyyntö-fi-konseptia koeponnistettiin Facebook-ryhmällä. Testi osoitti yhteisöllisen lähestymistavan edut, ihmiset jakavat kokemuksiaan ja oppivat toisiltaan ja epäasialliset ja kummalliset vastaukset saavat päivänvalon.  Ryhmässä käytiin myös keskustelua vastuullisesta tietojen pyytämisestä. Siitä, ettei kuormiteta viranomaisia liikaa turhanpäiväisillä tietopyynnöillä.</p>
 
-    <!-- Marketing messaging and featurettes
-    ================================================== -->
-    <!-- Wrap the rest of the page in another container to center all the content. -->
+<p>Pohjoismainen julkisuusperiaate on vienyt meitä eteenpäin tähänkin saakka. Tietopyyntö.fi auttaa tuomaan tätä 1700-luvulta periytyvää periaatetta tälle vuosisadalle. Tavoitteena on, että julkiset tiedot saisi tulevaisuudessa verkon kautta erikseen pyytämättä.</p>
 
-    <div class="container marketing">
+<h1>
+<a name="toteutus" class="anchor" href="#toteutus"><span class="octicon octicon-link"></span></a>Toteutus</h1>
 
-      <!-- Three columns of text below the carousel -->
-      <div class="row">
-        <div class="span4">
-          <h2><img src="img/github_logo.png" alt="GitHub"></h2>
-          <p>Open Source! Froide is free software and <strong>actively</strong> developed on GitHub. It's licensed under the permissive <strong>MIT license</strong>.</p>
-          <p><a class="btn" href="https://github.com/stefanw/froide">Froide on GitHub &raquo;</a></p>
-        </div><!-- /.span4 -->
-        <div class="span4">
-          <h2><img src="img/django-logo-positive.png" alt="Django"></h2>
-          <p>Maintained! Froide 3.0 uses the popular Python Web framework Django and its ecosystem in the<br/>
-            most <strong>up-to-date version 1.5</strong>.</p>
-          <p><a class="btn" href="https://docs.djangoproject.com/en/1.5/intro/overview/">Read more about Django &raquo;</a></p>
-        </div><!-- /.span4 -->
-        <div class="span4">
-          <h2><img src="img/travis.png" alt="Travis"></h2>
-          <p>High test coverage! Froide is continuously tested with Python 2.6 and Python 2.7 on Travis CI including <strong>in-browser testing</strong>.</p>
-          <p><a class="btn" href="https://travis-ci.org/stefanw/froide">Froide on Travis CI &raquo;</a></p>
-        </div><!-- /.span4 -->
-      </div><!-- /.row -->
+<p><img src="Tietopyynto2.png" alt=""></p>
 
-      <!-- START THE FEATURETTES -->
+<p>Tietopyyntöpalveluille on olemassa useampiakin avoimen lähdekoodin alustoja odottamassa sovittamista Suomeen. Yksi lupaavimmista on <a href="http://stefanw.github.io/froide/">saksalaislähtöinen Froide</a>, jolla on toteutettu mm. <a href="https://fragdenstaat.de/">fragdenstaat.de</a> -palvelu. Froide on jo vapaaehtoisvoimin <a href="https://www.transifex.com/projects/p/froide-2/language/fi/">käännetty suomeksi</a> ja kehitysmielessä sitä on kokeiltu. Tuotantokäyttöön ottamista varten suurimmat </p>
 
-      <hr id="features" class="featurette-divider">
+<p>Tietopyyntö.fi -palvelun saaminen kansalaisten käyttöön edellyttää pieniä parannuksia käyttöliittymään (graafikon työpanosta), tuotantopalvelimen ylläpitoa, testausta ja markkinointia. Eräs työintensiivisimmistä tehtävistä olisi koota palveluun valmiiksi suomen julkishallinnon organisaatioiden luettelo, jossa olisi organisaatioiden kirjaamojen sähköpostiosoitteet. Tällaista tietovarantoa ei ole valmiina, joten se pitäisi koota useammista lähteistä ja täydentää joukkoistamalla.</p>
 
-      <div class="featurette">
-        <img class="featurette-image pull-right" src="img/froide_1.png" alt="FragDenStaat.de">
-        <h2 class="featurette-heading">Powered by German Engineering. <span class="muted">Battle proven.</span></h2>
-        <p class="lead">Froide has been in active deployment for over two years and powers <a href="https://fragdenstaat.de">FragDenStaat.de</a> and <a href="https://fragdenstaat.at">FragDenStaat.at</a> - the German and Austrian FOI site. Its development language is English and it is <strong>fully internationlized</strong>.</p>
-        <p class="lead">Because it is built with latest <a href="http://twitter.github.com/bootstrap/">Bootstrap</a> it comes with a <strong>responsive design</strong> and is easily <strong>themeable</strong>.</p>
-      </div>
+<ul>
+<li>Tule mukaan tietopyyntö.fi -tiimiin <a href="https://github.com/okffi/froide/issues/6">https://github.com/okffi/froide/issues/6</a>
+</li>
+</ul><h1>
+<a name="froide" class="anchor" href="#froide"><span class="octicon octicon-link"></span></a>Froide</h1>
 
-      <hr class="featurette-divider">
+<p>Froide is a Freedom Of Information Portal written in Python using Django 1.5. It is used by the German and the Austrian FOI site, but it is fully internationalized and written in English. See the original <a href="https://github.com/stefanw/froide">Froide sourcecode on Github</a>.</p>
 
-      <div class="featurette">
-        <img class="featurette-image pull-left" src="img/froide_2.png" alt="FragDenStaat.de Berlin">
-        <h2 class="featurette-heading">Many laws, jurisdictions, entities. <span class="muted">Keep growing.</span></h2>
-        <p class="lead">You can start small and <strong>scale up</strong> to many jurisdiction and laws. Public Bodies can be <strong>easily imported</strong> and exported via the admin interface so your campaigns never lose pace.</p>
-      </div>
+<h2>
+<a name="docs" class="anchor" href="#docs"><span class="octicon octicon-link"></span></a>Docs</h2>
 
-      <hr class="featurette-divider">
+<p><a href="http://readthedocs.org/docs/froide/en/latest/">Read the documentation</a> including a <a href="http://readthedocs.org/docs/froide/en/latest/gettingstarted/">Getting Started Guide</a>. Froide is supported by the <a href="http://okfn.org/">Open Knowledge Foundation</a>.</p>
 
-      <div class="featurette">
-        <img class="featurette-image pull-right" src="img/froide_3.png">
-        <h2 class="featurette-heading">All the features you need. <span class="muted">Switch them off in case you don't.</span></h2>
-        <p class="lead">You need your users to send their name and keep it private? You get postal replies and need to <strong>redact PDFs</strong>? You are not allowed to publish documents and need to <strong>start a campaign</strong>? Froide has your back.</p>
-      </div>
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
 
-      <hr class="featurette-divider">
-
-      <div class="featurette">
-        <img class="featurette-image pull-left" src="img/froide_4.png">
-        <h2 class="featurette-heading">Integrate your community. <span class="muted">Delegate tasks.</span></h2>
-        <p class="lead">With the Django <strong>admin interface</strong> you control every single piece of data.<br/>
-          It comes with user roles and permissions so you only have to give your staff the access they need.</p>
-      </div>
-
-      <hr class="featurette-divider">
-
-      <!-- /END THE FEATURETTES -->
-
-      <div class="jumbotron">
-        <h1>Sounds good?</h1>
-        <p class="lead">Then let's go!</p>
-        <p>
-          <a class="btn btn-large btn-primary" href="http://froide.readthedocs.org/en/latest/gettingstarted/">
-            <i class="icon-arrow-right icon-white"></i>
-            Get Started!
-          </a>
-          <a class="btn btn-large" href="http://froide.readthedocs.org/en/latest/about/">
-            <i class="icon-info-sign"></i>
-            Learn more...
-          </a>
-        </p>
-      </div>
-
-      <!-- FOOTER -->
+<p>Froide is licensed under the MIT License. Some folders contain an attributions.txt with more information about the copyright holders in this specific folder.</p>
+      </section>
       <footer>
-        <p class="pull-right"><a href="#">Back to top</a></p>
-        <p><a href="http://www.okfn.org"><img src="img/okf.png" alt="Open Knowledge Foundation"/></a></p>
-        <p>
-          <small>
-          Image credit: <a href="http://www.flickr.com/photos/pgoyette/1745416423/">order</a>
-          by <a href="http://www.flickr.com/photos/pgoyette/">paul goyette</a>
-          under <a href="http://creativecommons.org/licenses/by-nc-sa/2.0/deed.en">CC-By-NC-SA 2.0</a>
-          </small>
-        </p>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
       </footer>
-
-    </div><!-- /.container -->
-
-
-
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery-1.9.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
   </body>
 </html>

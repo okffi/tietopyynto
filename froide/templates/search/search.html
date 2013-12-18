@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block body %}
+<h2>{% blocktrans %}Search Results for "{{ query }}"{% endblocktrans %}</h2>
+<form method="get" action="{% url 'foirequest-search' %}" class="form-search">
+  <div class="input-append">
+    <input type="search" placeholder="{% trans "Your Topic" %}" name="q" value="{{ query }}" autocomplete="off" class="search-query"/>
+    <button class="btn" type="submit">
+      <i class="icon-search"></i>
+      {% blocktrans %}Search For Information{% endblocktrans %}
+    </button>
+  </div>
+</form>
+{% if query %}
+  <div class="row">
+    <div class="span6">
+      <h3>{% blocktrans %}Related Freedom of Information Requests{% endblocktrans %}</h3>
+      <ul class="unstyled">
+        {% for object in foirequests %}
+          <li>
+            {% include "foirequest/snippets/request_item.html" %}
+          </li>
+        {% empty %}
+          <li>
+            {% blocktrans %}No relevant requests found for "{{ query }}".{% endblocktrans %}<br/>
+            <a href="{% url 'foirequest-list' %}">{% blocktrans %}You can browse the list of existing requests.{% endblocktrans %}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="span6">
+      <h3>{% blocktrans %}Related Public Bodies{% endblocktrans %}</h3>
+      <ul class="unstyled">
+        {% for object in publicbodies %}
+          <li>
+            {% include "publicbody/snippets/publicbody_item.html" %}
+          </li>
+        {% empty %}
+          <li>
+            {% blocktrans %}No relevant Public bodies found for "{{ query }}".{% endblocktrans %}<br/>
+            <a href="{% url 'publicbody-list' %}">{% blocktrans %}You can browse the list of Public Bodies.{% endblocktrans %}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% else %}
+  <div class="alert alert-danger">
+    {% blocktrans %}Please provide at least one search term{% endblocktrans %}
+  </div>
+{% endif %}
+<div>
+  <h3>{% blocktrans %}Couldn't find what you were looking for?{% endblocktrans %}</h3>
+  <p>
+    <a class="btn btn-primary" href="{% url 'foirequest-make_request' %}">{% blocktrans %}Make a Freedom of Information Request now!{% endblocktrans %}</a>
+  </p>
+</div>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+*.py[co]
+.DS_Store
+*.vim
+*.db
+*.mo
+local_*.py
+data/
+solr/
+files/
+.coverage
+*/_build/
+htmlcov/
+public/
+build/
+dist/
+*.egg-info
+*.log

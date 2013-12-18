@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load markup %}
+
+{% block title %}{{ profile_user.get_full_name }}{% endblock %}
+
+{% block metadescription %}{% blocktrans with name=profile_user.get_full_name %}Requests and activities of {{ name }}{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+<meta name="robots" content="noindex"/>
+{% endblock %}
+
+{% block body %}
+<h2>{% blocktrans with name=profile_user.get_full_name %}Profile of {{ name }}{% endblocktrans %}</h2>
+
+<div class="row">
+  <div class="span6">
+    <h3>{% blocktrans count counter=requests|length %}One Request{% plural %}{{ counter }} requests{% endblocktrans %}</h3>
+    <ul class="unstyled">
+      {% for object in requests %}
+        <li>
+          {% include "foirequest/snippets/request_item.html" %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="span6">
+    <h3>{% blocktrans %}Recent events{% endblocktrans %}</h3>
+    <ul>
+      {% for event in events %}
+      <li id="{{ event.get_html_id }}">
+        <a href="{{ event.get_absolute_url }}">
+          <span class="no-print" title="{{ event.timestamp }}">{% blocktrans with time=event.timestamp|timesince %}{{ time }} ago{% endblocktrans %}</span><span class="print-only">{{ event.timestamp|date:"DATETIME_FORMAT" }}</span></a>: {{ event.as_html }}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
+

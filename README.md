@@ -1,6 +1,8 @@
 Froide
 ======
 
+[![Build Status](https://travis-ci.org/hylje/froide.svg?branch=tietopyynto)](https://travis-ci.org/hylje/froide)
+
 Froide is a Freedom Of Information Portal written in Python using Django 1.8.
 
 It is used by the German and the Austrian FOI site, but it is fully

@@ -4780,7 +4780,7 @@ msgstr "Tämä sivusto julkaisee tietopyyntöjä ja auttaa sinua tekemään niit
 #: froide/templates/index.html:24
 #, python-format
 msgid "Search %(foicount)s requests and %(pbcount)s public bodies:"
-msgstr "Haku %(foicount)s requests and %(pbcount)s public bodies:"
+msgstr "Hae %(foicount)s tietopyynnöstä %(pbcount)s viranomaisesta:"
 
 #: froide/templates/index.html:31 froide/templates/search/search.html:17
 msgid "Search For Information"

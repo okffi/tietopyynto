@@ -796,7 +796,7 @@ msgstr "Viimeisimmät tapahtumat"
 #: froide/foirequest/templates/foirequest/snippets/request_item.html:23
 #, python-format
 msgid "%(time)s ago"
-msgstr "%(time) sitten"
+msgstr "%(time)s sitten"
 
 #: froide/account/templates/account/settings.html:6
 msgid "Account Settings"
@@ -1507,7 +1507,7 @@ msgstr "Tietopyyntö on ratkaistu"
 
 #: froide/foirequest/models.py:178
 msgid "Request Successful"
-msgstr "Tietopyyntö onnistui. "
+msgstr "Tietopyyntö onnistui"
 
 #: froide/foirequest/models.py:179
 msgid "The request has been successul."

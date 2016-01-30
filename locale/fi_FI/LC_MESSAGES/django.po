@@ -24,7 +24,6 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: docs/_build/html/theming.html:95
-#, fuzzy
 msgid ""
 "Froide is a free and Open Source Project by &lt;a href=&quot;http://www.okfn."
 "org&quot;&gt;the Open Knowledge Foundation&lt;/a&gt;."
@@ -391,7 +390,6 @@ msgid "Wants Newsletter"
 msgstr "Haluaa uutiskirjeen"
 
 #: froide/account/models.py:48
-#, fuzzy
 msgid "<< Name Not Public >>"
 msgstr "Nimeä ei näytetä julkisesti"
 
@@ -603,9 +601,8 @@ msgid "Subject"
 msgstr "Otsikko"
 
 #: froide/account/templates/account/admin_send_mail.html:21
-#, fuzzy
 msgid "You can use the following placeholders:"
-msgstr "Voit selata viranomaislistaa."
+msgstr "Voit käyttää seuraavia malleja"
 
 #: froide/account/templates/account/admin_send_mail.html:24
 #, python-format
@@ -979,7 +976,6 @@ msgid "Publish"
 msgstr "Julkaise"
 
 #: froide/account/templates/admin/account/user/change_form.html:6
-#, fuzzy
 msgid "This users requests"
 msgstr "on tietopyyntö"
 
@@ -1026,12 +1022,10 @@ msgid "Request not in correct state!"
 msgstr ""
 
 #: froide/foirequest/admin.py:154
-#, fuzzy
 msgid "Message send successfully!"
 msgstr "Salasana resetoitu"
 
 #: froide/foirequest/admin.py:157
-#, fuzzy
 msgid "Confirm request if unconfirmed"
 msgstr "Tämä tietopyyntö on jo vahvistettu"
 
@@ -3167,7 +3161,6 @@ msgid "If you need to provide an alternative email address, use this one:"
 msgstr ""
 
 #: froide/foirequest/templates/foirequest/show.html:305
-#, fuzzy
 msgid "It will still go to your request here."
 msgstr "Määrittele pyyntösi täällä..."
 
@@ -4141,7 +4134,7 @@ msgstr ""
 "%(unfollow_link)s"
 
 #: froide/foirequestfollower/templates/foirequestfollower/instant_update_follower.txt:13
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Cheers,\n"
 "%(site_name)s\n"
@@ -4744,16 +4737,14 @@ msgid "Log In /<br/>Sign up"
 msgstr "Kirjaudu sisään /<br/>Rekisteröidy"
 
 #: froide/templates/base.html:140
-#, fuzzy
 msgid ""
 "Froide is a free and Open Source Project by <a href=\"http://www.okfn.org"
 "\">the Open Knowledge Foundation</a>. If you want to support Froide, please "
 "visit the <a href=\"https://github.com/stefanw/froide\">repository on "
 "GitHub</a>."
 msgstr ""
-"Froide is a free and Open Source Project by <a href=\"http://www.okfn.org"
-"\">the Open Knowledge Foundation</a>. If you want to support Froide, please "
-"visit the <a href=\"%(url)s\">repository on GitHub</a>."
+"Froide on vapaa, avoimen lähdekoodin projekti jota ylläpitää <a href=\"http://www.okfn.org"
+"\">Open Knowledge Foundation</a>. Jos haluat edistää Froiden kehittämistä, vieraile <a href=\"%(url)s\">GitHub-projektisivulla</a>."
 
 #: froide/templates/base.html:158
 msgid "About"

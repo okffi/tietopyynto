@@ -331,14 +331,15 @@ def make_request(request, public_body=None, public_body_id=None):
     user_form = None
     if not request.user.is_authenticated():
         user_form = NewUserForm()
+
     return render(request, 'foirequest/request.html', {
         "public_body": public_body,
         "public_body_form": public_body_form,
         "request_form": rq_form,
         "user_form": user_form,
-        "public_body_search": public_body_search
+        "public_body_search": public_body_search,
+        "is_expert": request.user.is_authenticated() and request.user.is_expert,
     })
-
 
 @require_POST
 def submit_request(request, public_body=None):

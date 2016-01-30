@@ -31,6 +31,7 @@ class User(AbstractUser):
     address = models.TextField(_('Address'), blank=True)
     terms = models.BooleanField(_('Accepted Terms'), default=True)
     newsletter = models.BooleanField(_('Wants Newsletter'), default=False)
+    is_expert = models.BooleanField(_('Expert'), help_text=_('Unlocks shortcuts and other experienced user features'), default=False)
 
     objects = UserManager()
 

@@ -111,7 +111,7 @@
         </div>
       </fieldset>
     {% endif %}
-    {% if not request_form.is_bound and not request_form.initial.subject %}
+    {% if not request_form.is_bound and not request_form.initial.subject and not is_expert %}
       <fieldset id="check-foi">
       <legend>
         {% blocktrans %}Choose the type of request{% endblocktrans %}
@@ -450,7 +450,7 @@
 
       <fieldset id="review-and-submit">
         <div class="modal fade" id="step-review" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
+          <div class="modal-dialog" id="review-modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>

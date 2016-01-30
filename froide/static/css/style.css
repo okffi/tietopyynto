@@ -377,13 +377,14 @@ input:focus {
     white-space: nowrap;
     white-space: pre-wrap;
     word-wrap: break-word;
-    font-family: "Times New Roman", Times, serif;
-    color: #000;
+    font-size: 12pt;
+    font-family: "Helvetica Neue",Helvetica,arial,sans-serif;
+    color: #333;
     background-color: white;
     padding: 0.25em;
     border: 1px solid #ccc;
     height: 14em;
-    max-height: 10em;
+    max-height: 15em;
     overflow: auto;
 }
 

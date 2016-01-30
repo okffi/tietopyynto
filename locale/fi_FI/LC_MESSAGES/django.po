@@ -2659,11 +2659,11 @@ msgstr "Vieraile viranomaisen sivustolla"
 
 #: froide/foirequest/templates/foirequest/request.html:19
 msgid "/Dear Sir or Madam/"
-msgstr "Hei"
+msgstr "/Hei/"
 
 #: froide/foirequest/templates/foirequest/request.html:20
 msgid "/Kind Regards/"
-msgstr "Terveisin"
+msgstr "/Terveisin/"
 
 #: froide/foirequest/templates/foirequest/request.html:21
 msgid "Search the internet for information about:"

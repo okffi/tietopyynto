@@ -278,7 +278,7 @@
               <div id="letter_start" class="text"{% if request_form.full_text.value %} style="display:none"{% endif %}>{{ request_form.default_law.letter_start_form }}</div>
 
               <div{% if request_form.body.errors %} class="has-error"{% endif %}>{{ request_form.body }}</div>
-              <div id="letter_complete_end"{% if request_form.full_text.value %} style="display:none"{% endif %}><div id="letter_short_end" class="text"><small class="pull-right"><a class="toggle hideparent text-muted" href="#letter_end">{% trans "[... Show complete request text]" %}</a></small>
+              <div id="letter_complete_end"{% if request_form.full_text.value %} style="display:none"{% endif %}><div id="letter_short_end" class="text"><a class="toggle hideparent text-muted pull-right" href="#letter_end">{% trans "[... Show complete request text]" %}</a>
                 <span id="letter-greeting">{% blocktrans %}Kind Regards,{% endblocktrans %}</span>
               </div>
 

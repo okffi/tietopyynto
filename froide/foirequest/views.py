@@ -341,6 +341,7 @@ def make_request(request, public_body=None, public_body_id=None):
         "is_expert": request.user.is_authenticated() and request.user.is_expert,
     })
 
+
 @require_POST
 def submit_request(request, public_body=None):
     error = False

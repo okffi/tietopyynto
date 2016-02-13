@@ -9,14 +9,15 @@
 # Jaakko Korhonen <jaakko.korhonen@gmail.com>, 2014
 # Jaakko Korhonen <jaakko.korhonen@gmail.com>, 2014-2015
 # Jaakko Korhonen <jaakko.korhonen@gmail.com>, 2016
+# Leo Honkanen <leo.o.honkanen@gmail.com>, 2016
 # Tomi Toivio <tomi@sange.fi>, 2014-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: froide\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-27 19:21+0100\n"
-"PO-Revision-Date: 2016-01-30 11:21+0000\n"
-"Last-Translator: Jaakko Korhonen <jaakko.korhonen@gmail.com>\n"
+"PO-Revision-Date: 2016-02-13 20:20+0000\n"
+"Last-Translator: Leo Honkanen <leo.o.honkanen@gmail.com>\n"
 "Language-Team: Finnish (Finland) (http://www.transifex.com/ddie/froide/language/fi_FI/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,7 +29,7 @@ msgstr ""
 msgid ""
 "Froide is a free and Open Source Project by <a "
 "href=\"http://www.okfn.org\">the Open Knowledge Foundation</a>."
-msgstr "Froide on kansalaisten hallussa oleva avoimen lähdekoodin tuote jota ylläpitää <a href=\"http://www.okfn.org\"> Open Knowledge Foundation</a>. Jos haluat tukea Froiden kehittämistä, vieraile <a href=\"https://github.com/stefanw/froide\">GitHub -sivullamme</a> ja <a href=\"https://holvi.com/shop/tietopyynto/\"> Holvi-verkkokaupassamme.</a> "
+msgstr "Froide on <a href=\"http://okf.fi\">Open Knowledge</a>n avoimen lähdekoodin projekti. Jos haluat tukea Froiden kehittämistä, vieraile <a href=\"https://github.com/okffi/tietopyynto\">GitHub -sivullamme</a> ja <a href=\"https://holvi.com/shop/tietopyynto/\"> Holvi-verkkokaupassamme.</a> "
 
 #: docs/_build/html/theming.html:95
 msgid ""
@@ -474,7 +475,7 @@ msgstr "Viimeisimmät tapahtumat"
 #: froide/foirequest/templates/foirequest/snippets/request_item.html:23
 #, python-format
 msgid "%(time)s ago"
-msgstr "%(time) sitten"
+msgstr "%(time)s sitten"
 
 #: froide/account/templates/account/settings.html:6
 msgid "Account Settings"
@@ -1023,7 +1024,7 @@ msgstr "Viranomaisen %(publicbody)s oletusosoite"
 
 #: froide/foirequest/forms.py:188
 msgid "Send physical address"
-msgstr "Lähetä postiosoitteeseen"
+msgstr "Lähetä paperiposti osoitteeseen"
 
 #: froide/foirequest/forms.py:189
 msgid ""
@@ -1892,7 +1893,7 @@ msgstr "%(site_name)s: Pyyntö on pysäytetty"
 #: froide/foirequest/signals.py:74
 #, python-format
 msgid "%(site_name)s: New reply to your request"
-msgstr "%(site_name)s: Uuusi vastaus tietopyyntöösi"
+msgstr "%(site_name)s: Uusi vastaus tietopyyntöösi"
 
 #: froide/foirequest/signals.py:95
 #, python-format
@@ -2609,7 +2610,7 @@ msgstr "Kirjoita tietopyyntö"
 
 #: froide/foirequest/templates/foirequest/request.html:217
 msgid "Legal Explanation:"
-msgstr "Lakitekninen selitys:"
+msgstr "Lakitekninen tausta:"
 
 #: froide/foirequest/templates/foirequest/request.html:222
 msgid "Important Notes:"
@@ -3018,7 +3019,7 @@ msgstr "Mennessä:"
 #: froide/foirequest/templates/foirequest/show.html:416
 #, python-format
 msgid "%(due)s ago"
-msgstr "%(due) sitten"
+msgstr "%(due)s sitten"
 
 #: froide/foirequest/templates/foirequest/show.html:420
 #, python-format
@@ -4375,7 +4376,7 @@ msgid ""
 "href=\"http://www.okfn.org\">the Open Knowledge Foundation</a>. If you want "
 "to support Froide, please visit the <a "
 "href=\"https://github.com/stefanw/froide\">repository on GitHub</a>."
-msgstr "Froide on ilmainen avoimen lähdekoodin tuote jota ylläpitää <a href=\"http://www.okfn.org\"> Open Knowledge Foundation</a>. Jos haluat tukea Froiden kehittämistä, vieraile <a href=\"https://github.com/stefanw/froide\">GitHub -sivullamme</a>."
+msgstr "Froide on <a href=\"http://okf.fi\">Open Knowledge</a>n avoimen lähdekoodin projekti. Jos haluat tukea Froiden kehittämistä, vieraile <a href=\"https://github.com/okffi/tietopyynto\">GitHub -sivullamme</a> ja <a href=\"https://holvi.com/shop/tietopyynto/\"> Holvi-verkkokaupassamme.</a> "
 
 #: froide/templates/base.html:158
 msgid "About"

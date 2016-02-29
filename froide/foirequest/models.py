@@ -426,6 +426,12 @@ class FoiRequest(models.Model):
             return self.get_auth_link()
         return self.get_absolute_domain_short_url()
 
+    def get_upload_url(self):
+        return u"%s%s" % (
+            settings.SITE_URL,
+            reverse('foirequest-upload', kwargs={"obj_id": self.pk, "code": self.get_auth_code()})
+        )
+
     def get_description(self):
         return replace_email(self.description, _("<<email address>>"))
 
@@ -1081,6 +1087,7 @@ class FoiRequest(models.Model):
         if final is None:
             return None
         return (mes.timestamp - self.first_message).days
+
 
 
 class PublicBodySuggestion(models.Model):

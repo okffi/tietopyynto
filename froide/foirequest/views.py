@@ -1,6 +1,7 @@
 import datetime
 import re
 import json
+import magic
 
 from django.utils.six import text_type as str
 from django.conf import settings
@@ -34,7 +35,7 @@ from .models import FoiRequest, FoiMessage, FoiEvent, FoiAttachment
 from .forms import (RequestForm, ConcreteLawForm, TagFoiRequestForm,
         SendMessageForm, FoiRequestStatusForm, MakePublicBodySuggestionForm,
         PostalReplyForm, PostalAttachmentForm, MessagePublicBodySenderForm,
-        EscalationMessageForm)
+        EscalationMessageForm, OnlineAttachmentForm)
 from .feeds import LatestFoiRequestsFeed, LatestFoiRequestsFeedAtom
 from .tasks import process_mail
 from .foi_mail import package_foirequest
@@ -204,6 +205,77 @@ def auth(request, obj_id, code):
     else:
         return render_403(request)
 
+def document_upload(request, obj_id, code):
+    "Allow uploading large files directly"
+    foirequest = get_object_or_404(FoiRequest, pk=obj_id)
+
+    if foirequest.check_auth_code(code):
+        # this enables viewing the private foirequest too
+        request.session['pb_auth'] = code
+    else:
+        return render_403(request)
+
+    if request.method == "POST":
+        import time; time.sleep(5);
+        form = OnlineAttachmentForm(request.POST, request.FILES)
+        if form.is_valid():
+            # create a message
+            msg = FoiMessage.objects.create(
+                request=foirequest,
+                subject=_("Web form upload"),
+                is_response=True,
+                sender_name=form.cleaned_data["sender_name"],
+                sender_email=form.cleaned_data["sender_email"],
+                recipient=foirequest.user.display_name(),
+                plaintext=form.cleaned_data["text"],
+                timestamp=timezone.now(),
+            )
+
+            # update foirequest
+            foirequest.last_message = timezone.now()
+            foirequest.status = 'awaiting_classification'
+            foirequest.save()
+
+            # add attachments
+            for doc in form.cleaned_data["documents"]:
+                att = FoiAttachment(
+                    belongs_to=msg,
+                    name=doc.name,
+                    size=doc.size,
+                    file=doc
+                )
+
+                # sniff the content type
+                doc.seek(0)
+                content_type = magic.from_buffer(doc.read(1024), mime=True)
+                content_type = content_type.decode('utf-8')
+                doc.seek(0)
+
+                att.content_type = content_type
+                att.name = foirequest.user.apply_message_redaction(
+                    att.name,
+                    {
+                        'email': False,
+                        'address': False,
+                        # Translators: replacement for person name in filename
+                        'name': str(_('NAME'))
+                    }
+                )
+                att.save()
+
+            # inform everybody involved
+            messages.add_message(request, messages.SUCCESS, _(u"Upload successful. Thank you for uploading these documents."))
+            foirequest.message_received.send(sender=foirequest, message=msg)
+
+            return redirect('index')
+    else:
+        form = OnlineAttachmentForm()
+
+    return render(
+        request,
+        "foirequest/document_upload.html",
+        {"form": form, "foi": foirequest}
+    )
 
 def show(request, slug, template_name="foirequest/show.html",
             context=None, status=200):

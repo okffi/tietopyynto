@@ -1,4 +1,6 @@
 import hmac
+import logging
+from smtplib import SMTPRecipientsRefused
 
 from django.db import models
 from django.conf import settings
@@ -11,6 +13,9 @@ from django.utils.crypto import constant_time_compare
 from django.utils.encoding import python_2_unicode_compatible
 
 from froide.foirequest.models import FoiRequest
+
+
+logger = logging.getLogger(__name__)
 
 
 class FoiRequestFollowerManager(models.Manager):
@@ -122,18 +127,22 @@ class FoiRequestFollower(models.Model):
                 'site_name': settings.SITE_NAME,
                 'count': count
             }
-        send_mail(subject,
-            render_to_string(template,
-                {
-                    "req_event_dict": req_event_dict,
-                    "count": count,
-                    "user": user,
-                    "site_name": settings.SITE_NAME
-                }
-            ),
-            settings.DEFAULT_FROM_EMAIL,
-            [email or user.email]
-        )
+        try:
+            send_mail(subject,
+                      render_to_string(template,
+                                       {
+                                           "req_event_dict": req_event_dict,
+                                           "count": count,
+                                           "user": user,
+                                           "site_name": settings.SITE_NAME
+                                    }
+                                   ),
+                      settings.DEFAULT_FROM_EMAIL,
+                      [email or user.email]
+                      )
+        except SMTPRecipientsRefused as e:
+            # bad/empty email address, log it and carry on
+            logger.error("Failed to send notification email (RecipientsRefused): %r" % e.recipients)
 
 
 @receiver(FoiRequest.message_received,

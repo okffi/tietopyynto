@@ -1,0 +1,66 @@
+{% extends "scaffold.html" %}
+
+{% load i18n %}
+{% load staticfiles %}
+
+{% block body_tag %}
+<div class="container">
+  <div class="row">
+    <div class="col-12-md">
+      <h1>{% trans "Upload requested document" %}</h1>
+
+      <p>{% blocktrans with foi.title as title and foi.user.get_full_name as requester %}Please add documents for the freedom of information request <strong>{{ title }}</strong> by <strong>{{ requester }}</strong> here.{% endblocktrans %}</p>
+      <p>{% blocktrans %}Submitting this form is like an email reply, it is not necessary to do both.{% endblocktrans %}</p>
+    </div>
+
+    <form method="post" action="{% url "foirequest-upload" foi.pk foi.get_auth_code %}" enctype="multipart/form-data" class="form-horizontal" id="upload_form">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group {% if field.errors %}has-error{% endif %}">
+	<label for="{{ field.auto_id }}" class="control-label col-md-3">
+	  {{ field.label }} {% if field.required %}<small>{% trans "Required" %}</small>{% endif %}
+	</label>
+
+	<div class="col-md-9">
+	  {% if field.errors %}{{ field.errors }}{% endif %}
+	  {% if field.help_text %}<p>{{ field.help_text }}</p>{% endif %}
+	  {{ field }}
+	</div>
+      </div>
+      {% endfor %}
+      <div class="form-group">
+	<div class="col-md-1 col-md-offset-3">
+	  <input type="submit" value="{% trans "Upload" %}" class="btn btn-primary" id="submit_button">
+	</div>
+	<div class="col-md-6">
+	  <p id="submitted_note" style="display: none" class="alert alert-info">
+	    <i class="glyphicon glyphicon-exclamation-sign"></i>
+	    {% trans "Uploading... Please wait. Do not close the browser or leave this page." %}
+	  </p>
+	</div>
+      </div>
+    </form>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <hr>
+      <p>{% blocktrans %}This page is part of the <a href="{{ SITE_URL }}">{{ SITE_NAME }}</a> freedom of information service.{% endblocktrans %}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static "js/libs/jquery.js" %}"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("#upload_form").one('submit', function(e) {
+      $("#submitted_note").slideDown(400, function() {
+        $("#upload_form").submit();
+      });
+      $("#submit_button").attr("disabled", "disabled");
+      return false;
+    });
+  });
+</script>
+{% endblock %}

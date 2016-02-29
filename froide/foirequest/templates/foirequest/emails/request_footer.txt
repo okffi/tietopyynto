@@ -1,3 +1,6 @@
-{% load i18n %}{% autoescape off %}-- 
+{% load i18n %}{% autoescape off %}--
 {% blocktrans %}Legal Note: This mail was sent through a Freedom Of Information Portal. Replies might be published automatically.
-{% endblocktrans %}{% endautoescape %}
+{% endblocktrans %}
+{% blocktrans %}If large files are requested, you can upload them at:{% endblocktrans %}
+{{ request.get_upload_url }}
+{% endautoescape %}

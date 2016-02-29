@@ -8,6 +8,7 @@ from django.utils.html import escape
 from django.utils import timezone
 
 import floppyforms as forms
+from multiupload.fields import MultiFileField
 
 from froide.publicbody.models import PublicBody
 from froide.publicbody.widgets import PublicBodySelect
@@ -464,10 +465,44 @@ class PostalReplyForm(forms.Form, PostalScanMixin):
             raise forms.ValidationError(_("You need to provide either the letter text or a scanned document."))
         return cleaned_data
 
-
 class PostalAttachmentForm(forms.Form, PostalScanMixin):
     scan = forms.FileField(label=_("Scanned Document"),
             help_text=PostalReplyForm.scan_help_text)
+
+class OnlineAttachmentForm(forms.Form):
+    sender_name = forms.CharField(
+        label=_("Your Name"),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": _("Sender Name")
+            }),
+        required=True
+    )
+    sender_email = forms.EmailField(
+        label=_("Contact Email"),
+        required=True,
+        max_length=230,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": _("Sender Email")
+            })
+    )
+    text = forms.CharField(
+        label=_("Remarks"),
+        widget=forms.Textarea(
+            attrs={
+                "placeholder": _("Information, remarks about the documents"),
+                "class": "form-control"
+            }),
+        required=False
+    )
+    documents = MultiFileField(
+        label=_("Requested documents"),
+        help_text=_("You can add multiple documents at the same time."),
+        min_num=1
+    )
 
 
 class TagFoiRequestForm(TagObjectForm):

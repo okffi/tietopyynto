@@ -475,7 +475,7 @@ class OnlineAttachmentForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "form-control",
-                "placeholder": _("Sender Name")
+                "placeholder": _("Your Name")
             }),
         required=True
     )
@@ -486,7 +486,7 @@ class OnlineAttachmentForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "form-control",
-                "placeholder": _("Sender Email")
+                "placeholder": _("Email address")
             })
     )
     text = forms.CharField(

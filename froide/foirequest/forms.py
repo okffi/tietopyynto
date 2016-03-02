@@ -465,9 +465,11 @@ class PostalReplyForm(forms.Form, PostalScanMixin):
             raise forms.ValidationError(_("You need to provide either the letter text or a scanned document."))
         return cleaned_data
 
+
 class PostalAttachmentForm(forms.Form, PostalScanMixin):
     scan = forms.FileField(label=_("Scanned Document"),
             help_text=PostalReplyForm.scan_help_text)
+
 
 class OnlineAttachmentForm(forms.Form):
     sender_name = forms.CharField(

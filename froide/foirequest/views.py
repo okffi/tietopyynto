@@ -205,6 +205,7 @@ def auth(request, obj_id, code):
     else:
         return render_403(request)
 
+
 def document_upload(request, obj_id, code):
     "Allow uploading large files directly"
     foirequest = get_object_or_404(FoiRequest, pk=obj_id)
@@ -280,6 +281,7 @@ def document_upload(request, obj_id, code):
         "foirequest/document_upload.html",
         {"form": form, "foi": foirequest}
     )
+
 
 def show(request, slug, template_name="foirequest/show.html",
             context=None, status=200):

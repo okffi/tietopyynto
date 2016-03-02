@@ -135,8 +135,7 @@ class FoiRequestFollower(models.Model):
                                            "count": count,
                                            "user": user,
                                            "site_name": settings.SITE_NAME
-                                    }
-                                   ),
+                                       }),
                       settings.DEFAULT_FROM_EMAIL,
                       [email or user.email]
                       )

@@ -1089,7 +1089,6 @@ class FoiRequest(models.Model):
         return (mes.timestamp - self.first_message).days
 
 
-
 class PublicBodySuggestion(models.Model):
     request = models.ForeignKey(FoiRequest,
             verbose_name=_("Freedom of Information Request"))

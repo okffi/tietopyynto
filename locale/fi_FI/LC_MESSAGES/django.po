@@ -1311,7 +1311,7 @@ msgstr "Pyydetyt asiakirjat"
 
 #: froide/foirequest/forms.py:503
 msgid "You can add multiple documents at the same time."
-msgstr "Voit liittää lisää useita asiakirjoja kerrallaan."
+msgstr "Voit liittää useita asiakirjoja kerrallaan."
 
 #. Translators: part in request filter URL
 #: froide/foirequest/make_request_urls.py:8
@@ -2110,16 +2110,16 @@ msgstr "Lähetä pyydetty asiakirja"
 msgid ""
 "Please add documents for the freedom of information request <strong>"
 "%(title)s</strong> by <strong>%(requester)s</strong> here."
-msgstr ""
+msgstr "Lähettä asiakirjoja henkilön <strong>%(requester)s</strong> tekemään tietopyyntöön <strong>%(title)s</strong>"
 
 #: froide/foirequest/templates/foirequest/document_upload.html:13
 msgid ""
 "Submitting this form is like an email reply, it is not necessary to do both."
-msgstr ""
+msgstr "Tämän lomakkeen lähettäminen vastaa sähköpostiin vastaamista. Jos täytät ja lähetät tämän lomakkeen, ei ole tarpeen vastata myös tietopyyntösähköpostiin."
 
 #: froide/foirequest/templates/foirequest/document_upload.html:21
 msgid "Required"
-msgstr "Pakollinen kenttä"
+msgstr "Tärkeä kenttä"
 
 #: froide/foirequest/templates/foirequest/document_upload.html:33
 msgid "Upload"
@@ -2137,8 +2137,8 @@ msgid ""
 "This page is part of the <a href=\"%(SITE_URL)s\">%(SITE_NAME)s</a> freedom "
 "of information service."
 msgstr ""
-"Tämä sivu on osa <a href=\"%(SITE_URL)s\">%(SITE_NAME)s</a> "
-"tietopyyntöpalvelua."
+"Tämä sivu on osa <a href=\"%(SITE_URL)s\">%(SITE_NAME)s</a>"
+"-tietopyyntöpalvelua."
 
 #: froide/foirequest/templates/foirequest/emails/became_asleep.txt:1
 #, python-format
@@ -2470,7 +2470,7 @@ msgstr ""
 
 #: froide/foirequest/templates/foirequest/emails/request_footer.txt:4
 msgid "If large files are requested, you can upload them at:"
-msgstr ""
+msgstr "Jos tietopyyntö koskee suurikokoisia tiedostoja, voit lähettää ne osoitteessa:"
 
 #: froide/foirequest/templates/foirequest/emails/request_update.txt:1
 #: froide/foirequestfollower/templates/foirequestfollower/instant_update_follower.txt:1

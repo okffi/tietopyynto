@@ -7,6 +7,7 @@
 <div class="container">
   <div class="row">
     <div class="col-12-md">
+      <p>{{ SITE_NAME }}</p>
       <h1>{% trans "Upload requested document" %}</h1>
 
       <p>{% blocktrans with foi.title as title and foi.user.get_full_name as requester %}Please add documents for the freedom of information request <strong>{{ title }}</strong> by <strong>{{ requester }}</strong> here.{% endblocktrans %}</p>
@@ -18,7 +19,7 @@
       {% for field in form %}
       <div class="form-group {% if field.errors %}has-error{% endif %}">
 	<label for="{{ field.auto_id }}" class="control-label col-md-3">
-	  {{ field.label }} <br/>{% if field.required %}<small>{% trans "Required" %}</small>{% endif %}
+	  {{ field.label }} <br/>{% if field.field.required %}<small>{% trans "Required" %}</small>{% endif %}
 	</label>
 
 	<div class="col-md-9">

@@ -216,13 +216,13 @@ def document_upload(request, obj_id, code):
         return render_403(request)
 
     if request.method == "POST":
-        import time; time.sleep(5);
         form = OnlineAttachmentForm(request.POST, request.FILES)
         if form.is_valid():
             # create a message
             msg = FoiMessage.objects.create(
                 request=foirequest,
                 subject=_("Web form upload"),
+                subject_redacted=_("Web form upload"),
                 is_response=True,
                 sender_name=form.cleaned_data["sender_name"],
                 sender_email=form.cleaned_data["sender_email"],
@@ -232,6 +232,7 @@ def document_upload(request, obj_id, code):
             )
 
             # update foirequest
+            foirequest.plaintext_redacted = msg.redact_plaintext()
             foirequest.last_message = timezone.now()
             foirequest.status = 'awaiting_classification'
             foirequest.save()
@@ -261,6 +262,9 @@ def document_upload(request, obj_id, code):
                         'name': str(_('NAME'))
                     }
                 )
+                # defeat simple XSS attempts
+                if att.name.endswith("html"):
+                    att.name += ".txt"
                 att.save()
 
             # inform everybody involved
@@ -269,7 +273,7 @@ def document_upload(request, obj_id, code):
 
             return redirect('index')
     else:
-        form = OnlineAttachmentForm()
+        form = OnlineAttachmentForm(initial={"sender_email": foirequest.public_body.email})
 
     return render(
         request,

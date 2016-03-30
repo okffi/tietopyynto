@@ -242,7 +242,7 @@ def document_upload(request, obj_id, code):
             for doc in form.cleaned_data["documents"]:
                 att = FoiAttachment(
                     belongs_to=msg,
-                    name=doc.name.encode("ascii", "ignore") or "document",
+                    name=doc.name,
                     size=doc.size,
                     file=doc
                 )

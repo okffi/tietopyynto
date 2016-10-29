@@ -35,9 +35,12 @@ from froide.redaction.utils import convert_to_pdf
 
 from .models import FoiRequest, FoiMessage, FoiEvent, FoiAttachment
 from .forms import (RequestForm, ConcreteLawForm, TagFoiRequestForm,
-        SendMessageForm, FoiRequestStatusForm, MakePublicBodySuggestionForm,
-        PostalReplyForm, PostalAttachmentForm, MessagePublicBodySenderForm,
-        EscalationMessageForm, OnlineAttachmentForm)
+                    SendMessageForm, FoiRequestStatusForm,
+                    MakePublicBodySuggestionForm, PostalReplyForm,
+                    PostalAttachmentForm,
+                    MessagePublicBodySenderForm,
+                    EscalationMessageForm, OnlineAttachmentForm,
+                    DescribeFoiRequestForm)
 from .feeds import LatestFoiRequestsFeed, LatestFoiRequestsFeedAtom
 from .tasks import process_mail
 from .foi_mail import package_foirequest
@@ -555,6 +558,24 @@ def submit_request(request, public_body=None):
                 _('Please check your inbox for mail from us to confirm your mail address.'))
         # user cannot access the request yet, redirect to custom URL or homepage
         return redirect(special_redirect or "/")
+
+
+@require_POST
+def set_description(request, slug):
+    foirequest = get_object_or_404(FoiRequest, slug=slug)
+    if not request.user.is_authenticated or request.user != foirequest.user:
+        return render_403(request)
+
+    form = DescribeFoiRequestForm(request.POST)
+    if form.is_valid():
+        foirequest.description = form.cleaned_data["description"]
+        foirequest.save()
+        messages.success(request, _("Description changed"))
+        return redirect(foirequest)
+
+    messages.add_message(request, messages.ERROR,
+                         _('Invalid value for form submission!'))
+    return show(request, slug, context={"description_form": form}, status=400)
 
 
 @require_POST

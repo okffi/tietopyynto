@@ -1,13 +1,15 @@
 from django.conf.urls import url
 
 from .feeds import FoiRequestFeed, FoiRequestFeedAtom
-from .views import (shortlink, auth, show, suggest_public_body, set_public_body,
-                    set_status, send_message, escalation_message, make_public,
+from .views import (shortlink, auth, show, suggest_public_body,
+                    set_public_body, set_status, set_description,
+                    send_message, escalation_message, make_public,
                     set_law, set_tags, set_summary, add_postal_reply,
                     add_postal_reply_attachment, set_message_sender,
                     mark_not_foi, mark_checked, extend_deadline,
-                    approve_attachment, approve_message, make_same_request,
-                    resend_message, download_foirequest, redact_attachment)
+                    approve_attachment, approve_message,
+                    make_same_request, resend_message,
+                    download_foirequest, redact_attachment)
 
 urlpatterns = [
     url(r"^(?P<obj_id>\d+)$", shortlink, name="foirequest-notsolonglink"),
@@ -16,6 +18,7 @@ urlpatterns = [
     url(r"^(?P<slug>[-\w]+)/suggest/public-body/$", suggest_public_body, name="foirequest-suggest_public_body"),
     url(r"^(?P<slug>[-\w]+)/set/public-body/$", set_public_body, name="foirequest-set_public_body"),
     url(r"^(?P<slug>[-\w]+)/set/status/$", set_status, name="foirequest-set_status"),
+    url(r"^(?P<slug>[-\w]+)/set/desc/$", set_description, name="foirequest-set_description"),
     url(r"^(?P<slug>[-\w]+)/send/message/$", send_message, name="foirequest-send_message"),
     url(r"^(?P<slug>[-\w]+)/escalation/message/$", escalation_message, name="foirequest-escalation_message"),
     url(r"^(?P<slug>[-\w]+)/make/public/$", make_public, name="foirequest-make_public"),

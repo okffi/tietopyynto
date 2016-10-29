@@ -29,9 +29,10 @@
   <link rel="apple-touch-icon" href="{% static "img/apple-touch-icon.png" %}"/>
 
   <meta property="og:image" content="{{ SITE_URL }}{% static "img/folders.jpg" %}" />
-  <meta property="og:title" content="{{ SITE_NAME }}" />
+  <meta property="og:title" content="{% block og_title %}{{ SITE_NAME }}{% endblock %}" />
   <meta property="og:url" content="{{ SITE_URL }}" />
-  <meta property="og:description" content="{% blocktrans with site=SITE_NAME %}{{ site }} helps you to make freedom of information requests to public bodies{% endblocktrans %}" />
+
+  <meta property="og:description" content="{% block og_desc %}{% blocktrans with site=SITE_NAME %}{{ site }} helps you to make freedom of information requests to public bodies{% endblocktrans %}{% endblock %}" />
 
   {% block extra_head %}
   {% endblock %}

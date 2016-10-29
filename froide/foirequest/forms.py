@@ -538,3 +538,10 @@ class OnlineAttachmentForm(forms.Form):
 
 class TagFoiRequestForm(TagObjectForm):
     resource_name = 'request'
+
+
+class DescribeFoiRequestForm(forms.Form):
+    description = forms.CharField(
+        label=_("Description"),
+        widget=forms.Textarea
+    )

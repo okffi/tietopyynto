@@ -29,6 +29,9 @@
   {% endif %}
 {% endblock %}
 
+{% block og_desc %}{% if object.get_description %}{{ object.get_description }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block og_title %}{{ object.title }}{% endblock %}
+
 {% block body_extra_attribuets %}
 data-spy="scroll" data-target="#message-nav-container"
 {% endblock %}
@@ -160,6 +163,12 @@ data-spy="scroll" data-target="#message-nav-container"
             </a>
           </li>
         {% endif %}
+
+        <li>
+          <a href="#foi-description" data-toggle="tab">
+            {% blocktrans %}Write description{% endblocktrans %}
+          </a>
+        </li>
       </ul>
 
         </div>
@@ -326,6 +335,17 @@ data-spy="scroll" data-target="#message-nav-container"
           </div>
         {% endif %}
 
+	{# Write Description #}
+	<div class="tab-pane hidden-print" id="foi-description">
+	  <h4>{% trans "Update Description" %}</h4>
+	  <form method="post" action="{% url "foirequest-set_description" slug=object.slug %}">
+	    {% csrf_token %}
+
+            <textarea rows="8" class="form-control" name="description">{% if object.description %}{{ object.description }}{% endif %}</textarea><br/>
+            <button type="submit" class="btn btn-primary">{% blocktrans %}Save Description{% endblocktrans %}</button>
+	  </form>
+	</div>
+
         {# Write Resolution #}
         {% if object.status_is_final %}
           <div class="tab-pane hidden-print" id="resolution-summary">
@@ -439,7 +459,7 @@ data-spy="scroll" data-target="#message-nav-container"
 
       {% if object.description %}
         <dt>{% blocktrans %}Summary of Request{% endblocktrans %}</dt>
-        <dd>{{ object.get_description|urlizetrunc:40 }}</dd>
+        <dd>{{ object.get_description|linebreaks|urlizetrunc:40 }}</dd>
         {% endif %}
       {% if object.summary %}
         <dt>{% blocktrans %}Summary of Resolution{% endblocktrans %}</dt>

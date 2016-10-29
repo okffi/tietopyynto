@@ -19,7 +19,8 @@ from froide.foirequest.api import (FoiRequestResource,
 from froide.publicbody.views import (PublicBodySitemap, FoiLawSitemap,
                                      JurisdictionSitemap, show_publicbody)
 from froide.foirequest.views import (index, search, dashboard, auth,
-                                     FoiRequestSitemap, shortlink)
+                                     FoiRequestSitemap, shortlink,
+                                     document_upload)
 
 
 v1_api = Api(api_name='v1')
@@ -86,8 +87,7 @@ urlpatterns += [
     # Translators: Short-request URL
     url(r"^%s/(?P<obj_id>\d+)/?$" % _('r'), shortlink, name="foirequest-shortlink"),
     # Translators: Short-request auth URL
-    url(r"^%s/(?P<obj_id>\d+)/auth/(?P<code>[0-9a-f]+)/$" % _('r'), 'froide.foirequest.views.auth', name="foirequest-auth"),
-    url(r"^%s/(?P<obj_id>\d+)/up/(?P<code>[0-9a-f]+)/$" % _('r'), 'froide.foirequest.views.document_upload', name="foirequest-upload"),
+    url(r"^%s/(?P<obj_id>\d+)/up/(?P<code>[0-9a-f]+)/$" % _('r'), document_upload, name="foirequest-upload"),
     url(r"^%s/(?P<obj_id>\d+)/auth/(?P<code>[0-9a-f]+)/$" % _('r'), auth, name="foirequest-auth"),
     # Translators: follow request URL
     url(r'^%s/' % _('follow'), include('froide.foirequestfollower.urls')),

@@ -245,6 +245,7 @@
                 </ul>
               </div>
             </div>
+	    {% endif %}
             {% if request_form.non_field_errors %}
               <div class="alert alert-danger">
                 {% for error in request_form.non_field_errors %}

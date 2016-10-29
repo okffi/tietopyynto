@@ -13,6 +13,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
+# from django.utils.http import is_safe_url  FIXME: reinstate import
+from .utils import is_safe_url
 from django.http import Http404, HttpResponse
 from django.template.defaultfilters import slugify
 from django.contrib import messages
@@ -39,6 +41,9 @@ from .forms import (RequestForm, ConcreteLawForm, TagFoiRequestForm,
 from .feeds import LatestFoiRequestsFeed, LatestFoiRequestsFeedAtom
 from .tasks import process_mail
 from .foi_mail import package_foirequest
+from .hooks import registry
+from .utils import check_throttle
+
 
 X_ACCEL_REDIRECT_PREFIX = getattr(settings, 'X_ACCEL_REDIRECT_PREFIX', '')
 User = get_user_model()
@@ -84,7 +89,7 @@ def dashboard(request):
     if request.GET.get('notsameas'):
         foi_query = foi_query.filter(same_as__isnull=True)
     if request.GET.get('public'):
-        foi_query = foi_query.filter(public=True)
+        foi_query = foi_query.filter(visibility=FoiRequest.VISIBLE_TO_PUBLIC)
     for u in foi_query:
         d = u.first_message.date().isoformat()
         foirequest.setdefault(d, 0)
@@ -166,6 +171,10 @@ def list_requests(request, status=None, topic=None, tag=None,
 
     page = request.GET.get('page')
     paginator = Paginator(foi_requests, 20)
+
+    if request.GET.get('all') is not None:
+        if count <= 500:
+            paginator = Paginator(foi_requests, count)
     try:
         foi_requests = paginator.page(page)
     except PageNotAnInteger:
@@ -326,7 +335,7 @@ def show(request, slug, template_name="foirequest/show.html",
         context = {}
 
     active_tab = 'info'
-    if request.user.is_authenticated() and request.user == obj.user:
+    if request.user.is_authenticated and request.user == obj.user:
         if obj.awaits_classification():
             active_tab = 'set-status'
         elif obj.is_overdue() and obj.awaits_response():
@@ -390,11 +399,20 @@ def make_request(request, public_body=None, public_body_id=None):
         all_laws = FoiLaw.objects.all()
         public_body_form = PublicBodyForm()
     initial = {
-        "subject": request.GET.get("subject", ""),
-        "reference": request.GET.get('ref', '')
+        "subject": request.GET.get('subject', ''),
+        "reference": request.GET.get('ref', ''),
+        "redirect_url": request.GET.get('redirect', '')
     }
     if 'body' in request.GET:
         initial['body'] = request.GET['body']
+
+    if 'hide_public' in request.GET:
+        initial['hide_public'] = True
+        initial['public'] = False
+
+    if 'hide_similar' in request.GET:
+        initial['hide_similar'] = True
+
     initial['jurisdiction'] = request.GET.get("jurisdiction", None)
     public_body_search = request.GET.get("topic", "")
     initial['public_body_search'] = public_body_search
@@ -405,10 +423,19 @@ def make_request(request, public_body=None, public_body_id=None):
             _('You need to setup a default FOI Law object'))
         return render(request, '500.html')
 
-    rq_form = RequestForm(all_laws, default_law, True, initial=initial)
+    rq_form = RequestForm(user=request.user, list_of_laws=all_laws,
+                          default_law=default_law, initial=initial)
+
     user_form = None
-    if not request.user.is_authenticated():
-        user_form = NewUserForm()
+    if not request.user.is_authenticated:
+        initial_user_data = {}
+        if 'email' in request.GET:
+            initial_user_data['user_email'] = request.GET['email']
+        if 'first_name' in request.GET:
+            initial_user_data['first_name'] = request.GET['first_name']
+        if 'last_name' in request.GET:
+            initial_user_data['last_name'] = request.GET['last_name']
+        user_form = NewUserForm(initial=initial_user_data)
 
     return render(request, 'foirequest/request.html', {
         "public_body": public_body,
@@ -423,7 +450,7 @@ def make_request(request, public_body=None, public_body_id=None):
 @require_POST
 def submit_request(request, public_body=None):
     error = False
-    foilaw = None
+    foi_law = None
     if public_body is not None:
         public_body = get_object_or_404(PublicBody,
                 slug=public_body)
@@ -434,8 +461,10 @@ def submit_request(request, public_body=None):
         all_laws = FoiLaw.objects.all()
     context = {"public_body": public_body}
 
-    request_form = RequestForm(all_laws, FoiLaw.get_default_law(),
-            True, request.POST)
+    request_form = RequestForm(user=request.user,
+                               list_of_laws=all_laws,
+                               default_law=FoiLaw.get_default_law(),
+                               data=request.POST)
     context['request_form'] = request_form
     context['public_body_form'] = PublicBodyForm()
     if (public_body is None and
@@ -462,7 +491,7 @@ def submit_request(request, public_body=None):
 
     context['user_form'] = None
     user = None
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         user_form = NewUserForm(request.POST)
         context['user_form'] = user_form
         if not user_form.is_valid():
@@ -470,60 +499,68 @@ def submit_request(request, public_body=None):
     else:
         user = request.user
 
-    if not error:
-        password = None
-        if user is None:
-            user, password = AccountManager.create_user(**user_form.cleaned_data)
-        sent_to_pb = 1
-        if public_body is not None and public_body.pk is None:
-            public_body._created_by = user
-            public_body.save()
-            sent_to_pb = 2
-        elif public_body is None:
-            sent_to_pb = 0
+    if error:
+        messages.add_message(request, messages.ERROR,
+            _('There were errors in your form submission. Please review and submit again.'))
+        return render(request, 'foirequest/request.html', context, status=400)
 
-        if foilaw is None:
-            if public_body is not None:
-                foilaw = public_body.default_law
-            else:
-                foilaw = request_form.foi_law
+    password = None
+    if user is None:
+        user, password = AccountManager.create_user(**user_form.cleaned_data)
+    sent_to_pb = 1
+    if public_body is not None and public_body.pk is None:
+        public_body._created_by = user
+        public_body.save()
+        sent_to_pb = 2
+    elif public_body is None:
+        sent_to_pb = 0
 
-        foi_request = FoiRequest.from_request_form(
-                user,
-                public_body,
-                foilaw,
-                form_data=request_form.cleaned_data,
-                post_data=request.POST
-        )
-
-        if user.is_active:
-            if sent_to_pb == 0:
-                messages.add_message(request, messages.INFO,
-                    _('Others can now suggest the Public Bodies for your request.'))
-            elif sent_to_pb == 2:
-                messages.add_message(request, messages.INFO,
-                    _('Your request will be sent as soon as the newly created Public Body was confirmed by an administrator.'))
-
-            else:
-                messages.add_message(request, messages.INFO,
-                    _('Your request has been sent.'))
-            return redirect(u'%s%s' % (foi_request.get_absolute_url(), _('?request-made')))
+    if foi_law is None:
+        if public_body is not None:
+            foi_law = public_body.default_law
         else:
-            AccountManager(user).send_confirmation_mail(request_id=foi_request.pk,
-                    password=password)
+            foi_law = request_form.foi_law
+
+    kwargs = registry.run_hook('pre_request_creation', request,
+        user=user,
+        public_body=public_body,
+        foi_law=foi_law,
+        form_data=request_form.cleaned_data,
+        post_data=request.POST
+    )
+    foi_request = FoiRequest.from_request_form(**kwargs)
+
+    special_redirect = None
+    if request_form.cleaned_data['redirect_url']:
+        redirect_url = request_form.cleaned_data['redirect_url']
+        if is_safe_url(redirect_url, allowed_hosts=settings.ALLOWED_REDIRECT_HOSTS):
+            special_redirect = redirect_url
+
+    if user.is_active:
+        if sent_to_pb == 0:
             messages.add_message(request, messages.INFO,
-                    _('Please check your inbox for mail from us to confirm your mail address.'))
-            # user cannot access the request yet!
-            return redirect("/")
-    messages.add_message(request, messages.ERROR,
-        _('There were errors in your form submission. Please review and submit again.'))
-    return render(request, 'foirequest/request.html', context, status=400)
+                _('Others can now suggest the Public Bodies for your request.'))
+        elif sent_to_pb == 2:
+            messages.add_message(request, messages.INFO,
+                _('Your request will be sent as soon as the newly created Public Body was confirmed by an administrator.'))
+        else:
+            messages.add_message(request, messages.INFO,
+                _('Your request has been sent.'))
+        req_url = u'%s%s' % (foi_request.get_absolute_url(), _('?request-made'))
+        return redirect(special_redirect or req_url)
+    else:
+        AccountManager(user).send_confirmation_mail(request_id=foi_request.pk,
+                password=password)
+        messages.add_message(request, messages.INFO,
+                _('Please check your inbox for mail from us to confirm your mail address.'))
+        # user cannot access the request yet, redirect to custom URL or homepage
+        return redirect(special_redirect or "/")
 
 
 @require_POST
 def set_public_body(request, slug):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated() or request.user != foirequest.user:
+    if not request.user.is_authenticated or request.user != foirequest.user:
         return render_403(request)
     try:
         public_body_pk = int(request.POST.get('suggestion', ''))
@@ -540,6 +577,11 @@ def set_public_body(request, slug):
     if not foirequest.needs_public_body():
         messages.add_message(request, messages.ERROR,
             _("This request doesn't need a Public Body!"))
+        return render_400(request)
+
+    throttle_message = check_throttle(request.user, FoiRequest)
+    if throttle_message:
+        messages.add_message(request, messages.ERROR, throttle_message)
         return render_400(request)
 
     foilaw = public_body.default_law
@@ -561,7 +603,7 @@ def suggest_public_body(request, slug):
         # foilaw = public_body.default_law
         public_body = form.public_body_object
         user = None
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             user = request.user
         response = foirequest.suggest_public_body(public_body,
                 form.cleaned_data['reason'], user)
@@ -580,7 +622,7 @@ def suggest_public_body(request, slug):
 @require_POST
 def set_status(request, slug):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated() or request.user != foirequest.user:
+    if not request.user.is_authenticated or request.user != foirequest.user:
         return render_403(request)
     form = FoiRequestStatusForm(foirequest, request.POST)
     if form.is_valid():
@@ -597,7 +639,7 @@ def set_status(request, slug):
 @require_POST
 def send_message(request, slug):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return render_403(request)
     if request.user != foirequest.user:
         return render_403(request)
@@ -614,7 +656,7 @@ def send_message(request, slug):
 @require_POST
 def escalation_message(request, slug):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return render_403(request)
     if request.user != foirequest.user:
         return render_403(request)
@@ -635,7 +677,7 @@ def escalation_message(request, slug):
 @require_POST
 def make_public(request, slug):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated() or request.user != foirequest.user:
+    if not request.user.is_authenticated or request.user != foirequest.user:
         return render_403(request)
     foirequest.make_public()
     return redirect(foirequest)
@@ -644,7 +686,7 @@ def make_public(request, slug):
 @require_POST
 def set_law(request, slug):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated() or request.user != foirequest.user:
+    if not request.user.is_authenticated or request.user != foirequest.user:
         return render_403(request)
     if not foirequest.response_messages():
         return render_400(request)
@@ -662,7 +704,7 @@ def set_law(request, slug):
 @require_POST
 def set_tags(request, slug):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated() or not request.user.is_staff:
+    if not request.user.is_authenticated or not request.user.is_staff:
         return render_403(request)
     form = TagFoiRequestForm(foirequest, request.POST)
     if form.is_valid():
@@ -675,7 +717,7 @@ def set_tags(request, slug):
 @require_POST
 def set_summary(request, slug):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated() or request.user != foirequest.user:
+    if not request.user.is_authenticated or request.user != foirequest.user:
         return render_403(request)
     if not foirequest.status_is_final():
         return render_400(request)
@@ -692,7 +734,7 @@ def set_summary(request, slug):
 @require_POST
 def add_postal_reply(request, slug):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated() or request.user != foirequest.user:
+    if not request.user.is_authenticated or request.user != foirequest.user:
         return render_403(request)
     if not foirequest.public_body:
         return render_400(request)
@@ -745,7 +787,7 @@ def add_postal_reply_attachment(request, slug, message_id):
         message = FoiMessage.objects.get(request=foirequest, pk=int(message_id))
     except (ValueError, FoiMessage.DoesNotExist):
         raise Http404
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return render_403(request)
     if request.user != foirequest.user:
         return render_403(request)
@@ -784,7 +826,7 @@ def set_message_sender(request, slug, message_id):
                 pk=int(message_id))
     except (ValueError, FoiMessage.DoesNotExist):
         raise Http404
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return render_403(request)
     if request.user != foirequest.user:
         return render_403(request)
@@ -802,7 +844,7 @@ def set_message_sender(request, slug, message_id):
 @require_POST
 def mark_not_foi(request, slug):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return render_403(request)
     if not request.user.is_staff:
         return render_403(request)
@@ -816,7 +858,7 @@ def mark_not_foi(request, slug):
 @require_POST
 def mark_checked(request, slug):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return render_403(request)
     if not request.user.is_staff:
         return render_403(request)
@@ -830,7 +872,7 @@ def mark_checked(request, slug):
 @require_POST
 def approve_attachment(request, slug, attachment):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return render_403(request)
     if not request.user.is_staff and foirequest.user != request.user:
         return render_403(request)
@@ -846,7 +888,7 @@ def approve_attachment(request, slug, attachment):
 @require_POST
 def approve_message(request, slug, message):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return render_403(request)
     if not request.user.is_staff and foirequest.user != request.user:
         return render_403(request)
@@ -880,7 +922,7 @@ def make_same_request(request, slug, message_id):
         return render_400(request)
     if foirequest.same_as is not None:
         foirequest = foirequest.same_as
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         new_user_form = NewUserForm(request.POST)
         if not new_user_form.is_valid():
             return show(request, slug, context={"new_user_form": new_user_form}, status=400)
@@ -895,19 +937,29 @@ def make_same_request(request, slug, message_id):
             messages.add_message(request, messages.ERROR,
                 _("You already made an identical request"))
             return render_400(request)
+
+    throttle_message = check_throttle(request.user, FoiRequest)
+    if throttle_message:
+        messages.add_message(request, messages.ERROR, throttle_message)
+        return render_400(request)
+
     body = u"%s\n\n%s" % (foirequest.description,
             _('Please see this request on %(site_name)s where you granted access to this information: %(url)s') % {
                 'url': foirequest.get_absolute_domain_short_url(),
                 'site_name': settings.SITE_NAME
             })
-    fr = FoiRequest.from_request_form(
-        user, foirequest.public_body,
-        foirequest.law,
+
+    kwargs = registry.run_hook('pre_request_creation', request,
+        user=user,
+        public_body=foirequest.public_body,
+        foi_law=foirequest.law,
         form_data=dict(
             subject=foirequest.title,
             body=body,
             public=foirequest.public
-        ))  # Don't pass post_data, get default letter of law
+        )  # Don't pass post_data, get default letter of law
+    )
+    fr = FoiRequest.from_request_form(**kwargs)
     fr.same_as = foirequest
     fr.save()
     if user.is_active:
@@ -997,7 +1049,7 @@ def redact_attachment(request, slug, attachment_id):
 @require_POST
 def extend_deadline(request, slug):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return render_403(request)
     if not request.user.is_staff:
         return render_403(request)
@@ -1020,7 +1072,7 @@ def extend_deadline(request, slug):
 @require_POST
 def resend_message(request, slug):
     foirequest = get_object_or_404(FoiRequest, slug=slug)
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return render_403(request)
     if not request.user.is_staff:
         return render_403(request)

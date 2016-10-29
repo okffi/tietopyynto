@@ -16,7 +16,7 @@ from .models import AccountManager
 USER_CAN_HIDE_WEB = settings.FROIDE_CONFIG.get("user_can_hide_web", True)
 HAVE_ORGANIZATION = settings.FROIDE_CONFIG.get("user_has_organization", True)
 ALLOW_PSEUDONYM = settings.FROIDE_CONFIG.get("allow_pseudonym", False)
-HAVE_NEWSLETTER = settings.FROIDE_CONFIG.get("have_newsletter", False)
+HAVE_NEWSLETTER = lambda: settings.FROIDE_CONFIG.get("have_newsletter", False)
 
 
 class NewUserBaseForm(forms.Form):
@@ -101,13 +101,16 @@ class TermsForm(forms.Form):
         widget=AgreeCheckboxInput(
             agree_to=_(u'You agree to our <a href="%(url_terms)s" class="target-new">Terms and Conditions</a> and <a href="%(url_privacy)s" class="target-new">Privacy Statement</a>'),
             url_names={"url_terms": "help-terms", "url_privacy": "help-privacy"}))
-    if HAVE_NEWSLETTER:
-        newsletter = forms.BooleanField(required=False,
-            label=_("Check if you want to receive our newsletter."))
+
+    def __init__(self, *args, **kwargs):
+        super(TermsForm, self).__init__(*args, **kwargs)
+        if HAVE_NEWSLETTER():
+            self.fields['newsletter'] = forms.BooleanField(required=False,
+                label=_("Check if you want to receive our newsletter."))
 
     def save(self, user):
         user.terms = True
-        if HAVE_NEWSLETTER:
+        if HAVE_NEWSLETTER():
             user.newsletter = self.cleaned_data['newsletter']
         user.save()
 
@@ -158,25 +161,26 @@ class UserChangeForm(forms.Form):
             'placeholder': _('mail@ddress.net'),
             'class': 'form-control'
         }),
-        label=_('New email address'))
+        label=_('Your email address'))
 
     address = forms.CharField(max_length=300,
-            label=_('Mailing Address'),
+            label=_('Your mailing address'),
             help_text=_('Your address will never be displayed publicly.'),
             widget=forms.Textarea(attrs={'placeholder': _('Street, Post Code, City'),
                 'class': 'form-control'}))
 
-    if HAVE_NEWSLETTER:
-        newsletter = forms.BooleanField(required=False,
-            label=_("Newsletter"))
+    field_order = ['email', 'newsletter', 'address']
 
     def __init__(self, user, *args, **kwargs):
         super(UserChangeForm, self).__init__(*args, **kwargs)
         self.user = user
         self.fields['address'].initial = self.user.address
         self.fields['email'].initial = self.user.email
-        if HAVE_NEWSLETTER:
+        if HAVE_NEWSLETTER():
+            self.fields['newsletter'] = forms.BooleanField(required=False,
+                label=_("Newsletter"))
             self.fields['newsletter'].initial = self.user.newsletter
+        self.order_fields(self.field_order)
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower()
@@ -189,7 +193,7 @@ class UserChangeForm(forms.Form):
 
     def save(self):
         self.user.address = self.cleaned_data['address']
-        if HAVE_NEWSLETTER:
+        if HAVE_NEWSLETTER():
             self.user.newsletter = self.cleaned_data['newsletter']
 
         self.user.save()

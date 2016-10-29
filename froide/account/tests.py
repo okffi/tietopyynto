@@ -13,6 +13,7 @@ from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.conf import settings
 from django.contrib.messages.storage import default_storage
 
 from froide.publicbody.models import PublicBody
@@ -89,11 +90,14 @@ class AccountTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_signup(self):
+        froide_config = settings.FROIDE_CONFIG
+        froide_config['have_newsletter'] = True
         mail.outbox = []
         post = {"first_name": "Horst",
                 "last_name": "Porst",
                 "organization": "Porst AG",
                 "terms": "on",
+                "newsletter": "on",
                 "user_email": "horst.porst"}
         self.client.login(username='sw', password='froide')
         response = self.client.post(reverse('account-signup'), post)
@@ -104,12 +108,16 @@ class AccountTest(TestCase):
         self.assertEqual(response.status_code, 400)
         post['user_email'] = 'horst.porst@example.com'
         post['address'] = 'MyOwnPrivateStree 5\n31415 Pi-Ville'
-        response = self.client.post(reverse('account-signup'), post)
+
+        with self.settings(FROIDE_CONFIG=froide_config):
+            response = self.client.post(reverse('account-signup'), post)
+
         self.assertEqual(response.status_code, 302)
         user = User.objects.get(email=post['user_email'])
         self.assertEqual(user.first_name, post['first_name'])
         self.assertEqual(user.last_name, post['last_name'])
         self.assertEqual(user.address, post['address'])
+        self.assertTrue(user.newsletter)
         self.assertEqual(user.organization, post['organization'])
         self.assertEqual(mail.outbox[0].to[0], post['user_email'])
 
@@ -144,6 +152,8 @@ class AccountTest(TestCase):
         post['first_name'] = post['first_name'][:-1]
         response = self.client.post(reverse('account-signup'), post)
         self.assertEqual(response.status_code, 302)
+        user = User.objects.get(email=post['user_email'])
+        self.assertFalse(user.newsletter)
 
     def test_signup_same_name(self):
         self.client.logout()
@@ -384,7 +394,7 @@ class AccountTest(TestCase):
         response = self.client.get(test_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['user'], user)
-        self.assertTrue(response.context['user'].is_authenticated())
+        self.assertTrue(response.context['user'].is_authenticated)
         self.client.logout()
 
         # Try logging in via link: other user is authenticated
@@ -396,7 +406,7 @@ class AccountTest(TestCase):
         response = self.client.get(test_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['user'], other_user)
-        self.assertTrue(response.context['user'].is_authenticated())
+        self.assertTrue(response.context['user'].is_authenticated)
         self.client.logout()
 
         # Try logging in via link: user not active
@@ -406,7 +416,7 @@ class AccountTest(TestCase):
         response = self.client.get(autologin)
         self.assertEqual(response.status_code, 404)
         response = self.client.get(test_url)
-        self.assertTrue(response.context['user'].is_anonymous())
+        self.assertTrue(response.context['user'].is_anonymous)
 
         # Try logging in via link: wrong user id
         autologin = reverse('account-go', kwargs=dict(
@@ -415,7 +425,7 @@ class AccountTest(TestCase):
         response = self.client.get(autologin)
         self.assertEqual(response.status_code, 404)
         response = self.client.get(test_url)
-        self.assertTrue(response.context['user'].is_anonymous())
+        self.assertTrue(response.context['user'].is_anonymous)
         user.is_active = True
         user.save()
 
@@ -426,7 +436,7 @@ class AccountTest(TestCase):
         response = self.client.get(autologin)
         self.assertEqual(response.status_code, 302)
         response = self.client.get(test_url)
-        self.assertTrue(response.context['user'].is_anonymous())
+        self.assertTrue(response.context['user'].is_anonymous)
 
     def test_profile_page(self):
         user = User.objects.get(username='sw')
@@ -564,6 +574,8 @@ class AccountTest(TestCase):
         self.assertEqual(user.organization, '')
         self.assertEqual(user.organization_url, '')
         self.assertTrue(user.private)
+        self.assertTrue(user.is_deleted)
+        self.assertIsNotNone(user.date_left)
 
     def test_merge_account(self):
         from froide.foirequestfollower.models import FoiRequestFollower

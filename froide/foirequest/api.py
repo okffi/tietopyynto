@@ -7,11 +7,11 @@ from tastypie.paginator import Paginator as TastyPaginator
 from tastypie.resources import ModelResource
 from tastypie import fields, utils
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
-from tastypie.authorization import DjangoAuthorization
 
 from taggit.models import Tag
 
-from froide.helper.api_utils import AnonymousGetAuthentication
+from froide.helper.api_utils import (AnonymousGetAuthentication,
+                                     CustomDjangoAuthorization)
 
 from .models import FoiRequest, FoiMessage, FoiAttachment
 
@@ -26,7 +26,7 @@ class FoiAttachmentResource(ModelResource):
         queryset = FoiAttachment.objects.filter(belongs_to__request__visibility=2, approved=True)
         resource_name = 'attachment'
         authentication = AnonymousGetAuthentication()
-        authorization = DjangoAuthorization()
+        authorization = CustomDjangoAuthorization()
         fields = ['id', 'belongs_to', 'name', 'filetype',
             'approved', 'is_redacted', 'size'
         ]
@@ -60,7 +60,7 @@ class FoiMessageResource(ModelResource):
             'redacted', 'not_publishable'
         ]
         authentication = AnonymousGetAuthentication()
-        authorization = DjangoAuthorization()
+        authorization = CustomDjangoAuthorization()
 
     def dehydrate(self, bundle):
         if bundle.obj:
@@ -112,7 +112,8 @@ class FoiRequestResource(ModelResource):
             'status',
             'public_body',
             'resolution', 'slug',
-            'title'
+            'title',
+            'reference'
         ]
         filtering = {
             'slug': ALL,
@@ -126,10 +127,12 @@ class FoiRequestResource(ModelResource):
             'tags': ALL,
             'same_as': ALL,
             'status': ALL,
+            'reference': ALL,
+            'resolution': ALL,
             'public_body': ALL_WITH_RELATIONS
         }
         authentication = AnonymousGetAuthentication()
-        authorization = DjangoAuthorization()
+        authorization = CustomDjangoAuthorization()
         paginator_class = TastyPaginator
 
     def dehydrate(self, bundle):

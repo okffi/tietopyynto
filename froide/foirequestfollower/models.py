@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class FoiRequestFollowerManager(models.Manager):
     def follow(self, request, user, email=None, **kwargs):
-        if user.is_authenticated():
+        if user.is_authenticated:
             following = request.followed_by(user)
             if following:
                 following.delete()
@@ -56,9 +56,10 @@ class FoiRequestFollowerManager(models.Manager):
 
 @python_2_unicode_compatible
 class FoiRequestFollower(models.Model):
-    request = models.ForeignKey(FoiRequest,
+    request = models.ForeignKey(FoiRequest, on_delete=models.CASCADE,
             verbose_name=_("Freedom of Information Request"))
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, verbose_name=_("User"))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
+            verbose_name=_("User"), on_delete=models.CASCADE)
     email = models.CharField(max_length=255, blank=True)
     confirmed = models.BooleanField(default=False)
     timestamp = models.DateTimeField(_("Timestamp of Following"),

@@ -15,6 +15,7 @@ from django.conf import settings
 from django.core import mail
 from django.utils import timezone
 from django.utils.six import BytesIO
+from django.test.utils import override_settings
 
 from froide.publicbody.models import PublicBody, FoiLaw
 from froide.foirequest.tests import factories
@@ -374,6 +375,35 @@ class RequestTest(TestCase):
         else:
             self.assertEqual(message.to[0], pb.email)
         self.assertEqual(message.subject, '%s [#%s]' % (req.title, req.pk))
+
+    def test_redirect_after_request(self):
+        response = self.client.get(
+                reverse('foirequest-make_request') + '?redirect=/speci4l-url/?blub=bla')
+        self.assertContains(response, 'value="/speci4l-url/?blub=bla"')
+
+        pb = PublicBody.objects.all()[0]
+        self.client.login(username="dummy", password="froide")
+        post = {"subject": "Another Third Test-Subject",
+                "body": "This is another test body",
+                "redirect_url": "/?blub=bla",
+                "public_body": str(pb.pk),
+                "law": str(pb.default_law.pk),
+                "public": "on"}
+        response = self.client.post(
+                reverse('foirequest-submit_request'), post)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response['Location'].endswith('/?blub=bla'))
+
+        post = {"subject": "Another fourth Test-Subject",
+                "body": "This is another test body",
+                "redirect_url": "http://evil.example.com",
+                "public_body": str(pb.pk),
+                "law": str(pb.default_law.pk),
+                "public": "on"}
+        response = self.client.post(
+                reverse('foirequest-submit_request'), post)
+        req = FoiRequest.objects.get(title=post['subject'])
+        self.assertIn(req.get_absolute_url(), response['Location'])
 
     def test_foi_email_settings(self):
         pb = PublicBody.objects.all()[0]
@@ -1403,6 +1433,71 @@ class RequestTest(TestCase):
         req = FoiRequest.objects.all()[0]
         last = req.messages[-1]
         self.assertEqual(last.subject.count('[#%s]' % req.pk), 1)
+
+    @override_settings(FOI_EMAIL_FIXED_FROM_ADDRESS=False)
+    def test_user_name_phd(self):
+        from froide.helper.email_utils import make_address
+        from_addr = make_address('j.doe.12345@example.org', 'John Doe, Dr.')
+        self.assertEqual(from_addr, '"John Doe, Dr." <j.doe.12345@example.org>')
+
+    def test_throttling(self):
+        froide_config = settings.FROIDE_CONFIG
+        froide_config['request_throttle'] = [(2, 60), (5, 60 * 60)]
+
+        pb = PublicBody.objects.all()[0]
+        self.client.login(username="dummy", password="froide")
+
+        with self.settings(FROIDE_CONFIG=froide_config):
+            post = {"subject": "Another Third Test-Subject",
+                    "body": "This is another test body",
+                    "public_body": str(pb.pk),
+                    "public": "on"}
+            post['law'] = str(pb.default_law.pk)
+
+            response = self.client.post(
+                    reverse('foirequest-submit_request'), post)
+            self.assertEqual(response.status_code, 302)
+
+            response = self.client.post(
+                    reverse('foirequest-submit_request'), post)
+            self.assertEqual(response.status_code, 302)
+
+            response = self.client.post(
+                    reverse('foirequest-submit_request'), post)
+
+            self.assertContains(response,
+                u"exceeded your request limit of 2 requests in 1\xa0minute.",
+                status_code=400)
+
+    def test_throttling_same_as(self):
+        froide_config = settings.FROIDE_CONFIG
+        froide_config['request_throttle'] = [(2, 60), (5, 60 * 60)]
+
+        # pb = PublicBody.objects.all()[0]
+        # user = User.objects.get(username='sw')
+        messages = []
+        for i in range(3):
+            req = factories.FoiRequestFactory(slug='same-as-request-%d' % i)
+            messages.append(
+                factories.FoiMessageFactory.create(
+                    not_publishable=True,
+                    request=req
+                )
+            )
+
+        self.client.login(username="dummy", password="froide")
+
+        with self.settings(FROIDE_CONFIG=froide_config):
+
+            for i, mes in enumerate(messages):
+                response = self.client.post(reverse('foirequest-make_same_request',
+                        kwargs={"slug": mes.request.slug, "message_id": mes.id}))
+                if i < 2:
+                    self.assertEqual(response.status_code, 302)
+
+            self.assertContains(response,
+                u"exceeded your request limit of 2 requests in 1\xa0minute.",
+                status_code=400)
 
 
 class MediatorTest(TestCase):

@@ -14,7 +14,7 @@ from froide.helper.csv_utils import export_csv_response
 
 from .models import User, AccountManager
 
-from .utils import delete_all_unexpired_sessions_for_user
+from .utils import delete_all_unexpired_sessions_for_user, cancel_user
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -43,15 +43,25 @@ class UserAdmin(DjangoUserAdmin):
     # The forms to add and change user instances
     add_form = CustomUserCreationForm
 
+    list_display = ('username', 'email', 'first_name', 'last_name', 'date_joined',
+                    'is_active', 'is_staff')
+    ordering = ('-date_joined',)
+
     fieldsets = list(DjangoUserAdmin.fieldsets) + [
         (_('Profile info'), {'fields': ('address', 'organization',
                                         'organization_url', 'private',
                                         'terms', 'newsletter', 'is_expert')})
+        (_('Advanced'), {'fields': ('is_trusted', 'terms', 'is_blocked',
+                                    'is_deleted', 'date_left')})
     ]
-    list_filter = list(DjangoUserAdmin.list_filter) + ['private', 'terms', 'newsletter']
+    list_filter = list(DjangoUserAdmin.list_filter) + [
+            'private', 'terms', 'is_trusted',
+            'newsletter', 'is_deleted'
+    ]
+    search_fields = ('email', 'username', 'first_name', 'last_name')
 
     actions = ['export_csv', 'resend_activation',
-               'send_mail', 'delete_sessions']
+               'send_mail', 'delete_sessions', 'cancel_users']
 
     def export_csv(self, request, queryset):
         return export_csv_response(User.export_csv(queryset))
@@ -125,7 +135,7 @@ class UserAdmin(DjangoUserAdmin):
 
         # Display the confirmation page
         return TemplateResponse(request, 'account/admin_send_mail.html',
-            context, current_app=self.admin_site.name)
+            context)
     send_mail.short_description = _("Send mail to users")
 
     def delete_sessions(self, request, queryset):
@@ -134,5 +144,12 @@ class UserAdmin(DjangoUserAdmin):
         self.message_user(request, _("Sessions deleted."))
         return None
     delete_sessions.short_description = _('Delete sessions of users')
+
+    def cancel_users(self, request, queryset):
+        for user in queryset:
+            cancel_user(user)
+        self.message_user(request, _("Users canceled."))
+        return None
+    cancel_users.short_description = _('Cancel account of users')
 
 admin.site.register(User, UserAdmin)

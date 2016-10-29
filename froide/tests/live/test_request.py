@@ -1,5 +1,4 @@
 import re
-import unittest
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -51,7 +50,6 @@ class CheckJSErrors(object):
             raise JavaScriptException(msg)
 
 
-@unittest.skip("Skip live tests because of django configurations failure")
 class TestMakingRequest(StaticLiveServerTestCase):
 
     @classmethod

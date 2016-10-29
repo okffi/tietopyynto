@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from configurations import Configuration, importer, values
 importer.install(check_options=True)
 
 import os
 import sys
 import re
+
+from celery.schedules import crontab
 
 rec = lambda x: re.compile(x, re.I | re.U)
 
@@ -15,7 +19,6 @@ gettext = lambda s: s
 
 class Base(Configuration):
     DEBUG = values.BooleanValue(True)
-    TEMPLATE_DEBUG = values.BooleanValue(DEBUG)
 
     DATABASES = values.DatabaseURLValue('sqlite:///dev.db')
     CONN_MAX_AGE = None
@@ -34,12 +37,10 @@ class Base(Configuration):
 
         # external
         'haystack',
-        'djcelery',
         'taggit',
         'floppyforms',
         'overextends',
         'tastypie',
-        'tastypie_swagger',
         'storages',
         'compressor',
 
@@ -108,11 +109,6 @@ class Base(Configuration):
                             'compressor.filters.cssmin.CSSMinFilter']
     COMPRESS_PARSER = 'compressor.parser.HtmlParser'
 
-    # Additional locations of template files
-    TEMPLATE_DIRS = (
-        os.path.join(PROJECT_ROOT, "templates"),
-    )
-
     # ########## URLs #################
 
     ROOT_URLCONF = values.Value('froide.urls')
@@ -156,22 +152,32 @@ class Base(Configuration):
         "django.contrib.auth.backends.ModelBackend",
     ]
 
-    TEMPLATE_CONTEXT_PROCESSORS = (
-        'django.core.context_processors.debug',
-        'django.core.context_processors.i18n',
-        'django.core.context_processors.media',
-        'django.core.context_processors.static',
-        'django.core.context_processors.request',
-        'django.contrib.auth.context_processors.auth',
-        'django.contrib.messages.context_processors.messages',
-        'froide.helper.context_processors.froide',
-        'froide.helper.context_processors.site_settings'
-    )
-
-    # List of callables that know how to import templates from various sources.
-    TEMPLATE_LOADERS = [
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
+    TEMPLATES = [
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': (
+                os.path.join(PROJECT_ROOT, "templates"),
+            ),
+            'OPTIONS': {
+                'debug': values.BooleanValue(DEBUG),
+                'loaders': [
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                ],
+                'builtins': ['overextends.templatetags.overextends_tags'],
+                'context_processors': [
+                    'django.template.context_processors.debug',
+                    'django.template.context_processors.i18n',
+                    'django.template.context_processors.media',
+                    'django.template.context_processors.static',
+                    'django.template.context_processors.request',
+                    'django.contrib.auth.context_processors.auth',
+                    'django.contrib.messages.context_processors.messages',
+                    'froide.helper.context_processors.froide',
+                    'froide.helper.context_processors.site_settings'
+                ]
+            }
+        }
     ]
 
     MIDDLEWARE_CLASSES = [
@@ -197,7 +203,7 @@ class Base(Configuration):
 
     # Language code for this installation. All choices can be found here:
     # http://www.i18nguy.com/unicode/language-identifiers.html
-    LANGUAGE_CODE = values.Value('en-us')
+    LANGUAGE_CODE = values.Value('en')
     LANGUAGES = (
         ('en', gettext('English')),
         ('es', gettext('Spanish')),
@@ -298,6 +304,7 @@ class Base(Configuration):
 
     # Change this
     # ALLOWED_HOSTS = ()
+    ALLOWED_REDIRECT_HOSTS = ()
 
     SESSION_COOKIE_AGE = values.IntegerValue(3628800)  # six weeks
     SESSION_COOKIE_HTTPONLY = True
@@ -305,13 +312,35 @@ class Base(Configuration):
 
     # ######## Celery #############
 
-    CELERY_RESULT_BACKEND = values.Value('djcelery.backends.database:DatabaseBackend')
-    CELERYBEAT_SCHEDULER = values.Value("djcelery.schedulers.DatabaseScheduler")
+    CELERYBEAT_SCHEDULE = {
+        'fetch-mail': {
+            'task': 'froide.foirequest.tasks.fetch_mail',
+            'schedule': crontab(),
+        },
+        'detect-asleep': {
+            'task': 'froide.foirequest.tasks.detect_asleep',
+            'schedule': crontab(hour=0, minute=0),
+        },
+        'detect-overdue': {
+            'task': 'froide.foirequest.tasks.detect_overdue',
+            'schedule': crontab(hour=0, minute=0),
+        },
+        'update-foirequestfollowers': {
+            'task': 'froide.foirequestfollower.tasks.batch_update',
+            'schedule': crontab(hour=0, minute=0),
+        },
+        'classification-reminder': {
+            'task': 'froide.foirequest.tasks.classification_reminder',
+            'schedule': crontab(hour=7, minute=0, day_of_week=6),
+        },
+    }
+
     CELERY_ALWAYS_EAGER = values.BooleanValue(True)
 
     CELERY_ROUTES = {
         'froide.foirequest.tasks.fetch_mail': {"queue": "emailfetch"},
     }
+    CELERY_TIMEZONE = TIME_ZONE
 
     # ######## Haystack ###########
 
@@ -323,7 +352,8 @@ class Base(Configuration):
 
     # ######### Tastypie #########
 
-    TASTYPIE_SWAGGER_API_MODULE = values.Value('froide.urls.v1_api')
+    # Do not include xml by default, so lxml doesn't need to be present
+    TASTYPIE_DEFAULT_FORMATS = ['json']
 
     # ######### Froide settings ########
 
@@ -341,9 +371,11 @@ class Base(Configuration):
         default_law=1,
         search_engine_query="http://www.google.de/search?as_q=%(query)s&as_epq=&as_oq=&as_eq=&hl=en&lr=&cr=&as_ft=i&as_filetype=&as_qdr=all&as_occt=any&as_dt=i&as_sitesearch=%(domain)s&as_rights=&safe=images",
         greetings=[rec(u"Dear (?:Mr\.?|Ms\.? .*?)")],
+        custom_replacements=[],
         closings=[rec(u"Sincerely yours,?")],
         public_body_boosts={},
         dryrun=False,
+        request_throttle=None,  # Set to [(15, 7 * 24 * 60 * 60),] for 15 requests in 7 days
         dryrun_domain="testmail.example.com",
         allow_pseudonym=False,
         doc_conversion_binary=None,  # replace with libreoffice instance
@@ -410,16 +442,21 @@ class ThemeBase(object):
         return installed.default
 
     @property
-    def TEMPLATE_LOADERS(self):
-        old = super(ThemeBase, self).TEMPLATE_LOADERS
+    def TEMPLATES(self):
+        TEMP = super(ThemeBase, self).TEMPLATES
         if self.FROIDE_THEME is not None:
-            return (['froide.helper.theme_utils.ThemeLoader'] + old)
-        return old
+            TEMP[0]['OPTIONS']['loaders'] = ['froide.helper.theme_utils.ThemeLoader'] + TEMP[0]['OPTIONS']['loaders']
+        return TEMP
 
 
 class Test(Base):
     DEBUG = False
-    TEMPLATE_DEBUG = True
+
+    @property
+    def TEMPLATES(self):
+        TEMP = super(Test, self).TEMPLATES
+        TEMP[0]['OPTIONS']['debug'] = True
+        return TEMP
 
     def _fake_convert_pdf(self, infile, outpath):
         _, filename = os.path.split(infile)
@@ -471,8 +508,6 @@ class Test(Base):
             },
         }
 
-    CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
-    CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
     CELERY_ALWAYS_EAGER = True
     CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 
@@ -536,7 +571,13 @@ class German(object):
 
 class Production(Base):
     DEBUG = False
-    TEMPLATE_DEBUG = False
+
+    @property
+    def TEMPLATES(self):
+        TEMP = super(Production, self).TEMPLATES
+        TEMP[0]['OPTIONS']['debug'] = False
+        return TEMP
+
     ALLOWED_HOSTS = values.TupleValue(('example.com',))
     CELERY_ALWAYS_EAGER = values.BooleanValue(False)
     COMPRESS_ENABLED = values.BooleanValue(True)

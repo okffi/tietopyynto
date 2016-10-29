@@ -18,7 +18,7 @@ from django.utils.crypto import constant_time_compare
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.models import AbstractUser, UserManager
 
-from froide.helper.text_utils import replace_greetings, replace_word
+from froide.helper.text_utils import replace_custom, replace_word
 from froide.helper.csv_utils import export_csv, get_dict
 
 user_activated_signal = dispatch.Signal(providing_args=[])
@@ -32,6 +32,13 @@ class User(AbstractUser):
     terms = models.BooleanField(_('Accepted Terms'), default=True)
     newsletter = models.BooleanField(_('Wants Newsletter'), default=False)
     is_expert = models.BooleanField(_('Expert'), help_text=_('Unlocks shortcuts and other experienced user features'), default=False)
+
+    is_trusted = models.BooleanField(_('Trusted'), default=False)
+    is_blocked = models.BooleanField(_('Blocked'), default=False)
+
+    is_deleted = models.BooleanField(_('deleted'), default=False,
+            help_text=_('Designates whether this user was deleted.'))
+    date_left = models.DateTimeField(_('date left'), default=None, null=True, blank=True)
 
     objects = UserManager()
 
@@ -48,6 +55,9 @@ class User(AbstractUser):
         d = get_dict(self, fields)
         d['request_count'] = self.foirequest_set.all().count()
         return d
+
+    def trusted(self):
+        return self.is_trusted or self.is_staff or self.is_superuser
 
     @classmethod
     def export_csv(cls, queryset):
@@ -93,9 +103,8 @@ class User(AbstractUser):
         name_replacement = replacements.get('name',
                 str(_("<< Name removed >>")))
 
-        content = replace_greetings(content,
-                settings.FROIDE_CONFIG['greetings'],
-                name_replacement)
+        content = replace_custom(settings.FROIDE_CONFIG['greetings'],
+                name_replacement, content)
 
         content = replace_word(self.last_name, name_replacement, content)
         content = replace_word(self.first_name, name_replacement, content)

@@ -51,6 +51,18 @@
       <dd itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
         {{ object.address|linebreaksbr }}
       </dd>
+      {% if object.file_index %}
+        <dt>{% blocktrans %}File Index:{% endblocktrans %}</dt>
+        <dd>
+          <a href="{{ object.file_index }}">{{ object.file_index|urlizetrunc:40 }}</a>
+        </dd>
+      {% endif %}
+      {% if object.org_chart %}
+        <dt>{% blocktrans %}Organisation Chart:{% endblocktrans %}</dt>
+        <dd>
+          <a href="{{ object.org_chart }}">{{ object.org_chart|urlizetrunc:40 }}</a>
+        </dd>
+      {% endif %}
     </dl>
 
     {% if user.is_staff %}
@@ -77,6 +89,8 @@
         {% for res in resolutions %}
         <tr>
           <td>
+            {% block result_image %}
+            {% endblock result_image %}
             <a href="{% url 'foirequest-list' public_body=object.slug %}?status={{ res.url_slug }}">
               {{ res.name }}
             </a>

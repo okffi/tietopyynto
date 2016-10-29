@@ -12,13 +12,14 @@ from django.utils.six import BytesIO
 
 import floppyforms as forms
 
-from froide.helper.admin_utils import NullFilterSpec, AdminTagAllMixIn
+from froide.helper.admin_utils import (make_nullfilter, AdminTagAllMixIn,
+                                      ForeignKeyFilter, TaggitListFilter)
 from froide.helper.widgets import TagAutocompleteTagIt
 from froide.helper.email_utils import EmailParser
 
 from .models import (FoiRequest, FoiMessage,
         FoiAttachment, FoiEvent, PublicBodySuggestion,
-        DeferredMessage)
+        DeferredMessage, TaggedFoiRequest)
 from .tasks import count_same_foirequests, convert_attachment_task
 
 
@@ -28,31 +29,6 @@ SUBJECT_REQUEST_ID = re.compile(r' \[#(\d+)\]')
 class FoiMessageInline(admin.StackedInline):
     model = FoiMessage
     raw_id_fields = ('request', 'sender_user', 'sender_public_body', 'recipient_public_body')
-
-
-class SameAsNullFilter(NullFilterSpec):
-    title = _(u'Has same request')
-    parameter_name = u'same_as'
-
-
-class RequesterFilter(admin.FieldListFilter):
-    template = "admin/foirequest/user_filter.html"
-
-    def __init__(self, field, request, params, model, model_admin, field_path):
-        super(RequesterFilter, self).__init__(
-            field, request, params, model, model_admin, field_path)
-        self.lookup_val = request.GET.get(self.field_path, None)
-
-    def expected_parameters(self):
-        return [self.field_path]
-
-    def choices(self, cl):
-        return [{
-            'value': self.lookup_val,
-            'field_path': self.field_path,
-            'query_string': cl.get_query_string({},
-                [self.field_path]),
-        }]
 
 
 class FoiRequestAdminForm(forms.ModelForm):
@@ -68,6 +44,10 @@ class FoiRequestAdminForm(forms.ModelForm):
         }
 
 
+class FoiRequestTagsFilter(TaggitListFilter):
+    tag_class = TaggedFoiRequest
+
+
 class FoiRequestAdmin(admin.ModelAdmin, AdminTagAllMixIn):
     form = FoiRequestAdminForm
 
@@ -78,16 +58,20 @@ class FoiRequestAdmin(admin.ModelAdmin, AdminTagAllMixIn):
     list_display = ('title', 'first_message', 'secret_address', 'checked',
         'public_body', 'status',)
     list_filter = ('jurisdiction', 'first_message', 'last_message', 'status',
-        'resolution', 'is_foi', 'checked', 'public', 'visibility', SameAsNullFilter,
-        ('user', RequesterFilter))
-    search_fields = ['title', "description", 'secret_address']
+        'resolution', 'is_foi', 'checked', 'public', 'visibility',
+        'is_blocked',
+        make_nullfilter('same_as', _(u'Has same request')),
+        ('user', ForeignKeyFilter), ('public_body', ForeignKeyFilter),
+        FoiRequestTagsFilter)
+    search_fields = ['title', 'description', 'secret_address', 'reference']
     ordering = ('-last_message',)
     date_hierarchy = 'first_message'
 
     autocomplete_resource_name = 'request'
 
     actions = ['mark_checked', 'mark_not_foi', 'tag_all',
-               'mark_same_as', 'remove_from_index', 'confirm_request']
+               'mark_same_as', 'remove_from_index', 'confirm_request',
+               'set_visible_to_user', 'unpublish']
     raw_id_fields = ('same_as', 'public_body', 'user',)
     save_on_top = True
 
@@ -140,7 +124,7 @@ class FoiRequestAdmin(admin.ModelAdmin, AdminTagAllMixIn):
 
         # Display the confirmation page
         return TemplateResponse(request, 'foirequest/admin_mark_same_as.html',
-            context, current_app=self.admin_site.name)
+            context)
     mark_same_as.short_description = _("Mark selected requests as identical to...")
 
     def remove_from_index(self, request, queryset):
@@ -164,6 +148,16 @@ class FoiRequestAdmin(admin.ModelAdmin, AdminTagAllMixIn):
         return None
     confirm_request.short_description = _("Confirm request if unconfirmed")
 
+    def set_visible_to_user(self, request, queryset):
+        queryset.update(visibility=1)
+        self.message_user(request, _("Selected requests are now only visible to requester."))
+    set_visible_to_user.short_description = _("Set only visible to requester")
+
+    def unpublish(self, request, queryset):
+        queryset.update(public=False)
+        self.message_user(request, _("Selected requests are now unpublished."))
+    unpublish.short_description = _("Unpublish")
+
 
 class FoiAttachmentInline(admin.TabularInline):
     model = FoiAttachment
@@ -184,22 +178,14 @@ class FoiMessageAdmin(admin.ModelAdmin):
     ]
 
 
-class RedactedVersionNullFilter(NullFilterSpec):
-    title = _(u'Has redacted version')
-    parameter_name = u'redacted'
-
-
-class ConvertedVersionNullFilter(NullFilterSpec):
-    title = _(u'Has converted version')
-    parameter_name = u'converted'
-
-
 class FoiAttachmentAdmin(admin.ModelAdmin):
     raw_id_fields = ('belongs_to', 'redacted', 'converted')
     ordering = ('-id',)
     list_display = ('name', 'filetype', 'admin_link_message', 'approved', 'can_approve',)
     list_filter = ('can_approve', 'approved', 'is_redacted', 'is_converted',
-                   RedactedVersionNullFilter, ConvertedVersionNullFilter)
+                   make_nullfilter('redacted', _(u'Has redacted version')),
+                   make_nullfilter('converted', _(u'Has converted version'))
+    )
     search_fields = ['name']
     actions = ['approve', 'cannot_approve', 'convert']
 
@@ -241,15 +227,10 @@ class PublicBodySuggestionAdmin(admin.ModelAdmin):
     raw_id_fields = ('request', 'public_body', 'user')
 
 
-class RequestNullFilter(NullFilterSpec):
-    title = _(u'Has request')
-    parameter_name = u'request'
-
-
 class DeferredMessageAdmin(admin.ModelAdmin):
     model = DeferredMessage
 
-    list_filter = (RequestNullFilter, 'spam')
+    list_filter = (make_nullfilter('request', _(u'Has request')), 'spam')
     search_fields = ['recipient']
     date_hierarchy = 'timestamp'
     ordering = ('-timestamp',)
@@ -314,7 +295,7 @@ class DeferredMessageAdmin(admin.ModelAdmin):
 
         # Display the confirmation page
         return TemplateResponse(request, 'foirequest/admin_redeliver.html',
-            context, current_app=self.admin_site.name)
+            context)
     redeliver.short_description = _("Redeliver to...")
 
 admin.site.register(FoiRequest, FoiRequestAdmin)

@@ -3432,12 +3432,12 @@ msgstr "Tämän tietopyynnön tila:"
 
 #: froide/foirequest/templates/foirequest/show.html:415
 msgid "Due date:"
-msgstr "Mennessä:"
+msgstr "Palautettava ennen:"
 
 #: froide/foirequest/templates/foirequest/show.html:418
 #, python-format
 msgid "%(due)s ago"
-msgstr "%(due) sitten"
+msgstr "%(due)s sitten"
 
 #: froide/foirequest/templates/foirequest/show.html:422
 #, python-format

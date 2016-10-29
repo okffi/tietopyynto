@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: froide\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-29 11:20+0200\n"
+"POT-Creation-Date: 2016-10-29 14:43+0200\n"
 "PO-Revision-Date: 2015-11-27 16:57+0000\n"
 "Last-Translator: stefanw <stefanwehrmeyer@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/ddie/froide/language/es/)\n"
@@ -203,7 +203,7 @@ msgid "Passwords do not match!"
 msgstr "¡Las claves no coinciden!"
 
 #: froide/account/forms.py:164
-#: froide/foirequest/templates/foirequest/request.html:329
+#: froide/foirequest/templates/foirequest/request.html:330
 msgid "Your email address"
 msgstr "Tu correo"
 
@@ -352,7 +352,7 @@ msgstr "Buscar"
 #: froide/foirequest/forms.py:184 froide/foirequest/forms.py:253
 #: froide/foirequest/forms.py:465 froide/foirequest/forms.py:468
 #: froide/foirequest/models.py:1184
-#: froide/foirequest/templates/foirequest/request.html:491
+#: froide/foirequest/templates/foirequest/request.html:492
 #: froide/foirequest/templates/foirequest/snippets/message.html:49
 msgid "Subject"
 msgstr "Asunto"
@@ -1157,7 +1157,7 @@ msgid "Sending Public Body"
 msgstr "Enviar Organismo"
 
 #: froide/foirequest/forms.py:182
-#: froide/foirequest/templates/foirequest/request.html:483
+#: froide/foirequest/templates/foirequest/request.html:484
 #: froide/foirequest/templates/foirequest/snippets/message.html:66
 msgid "To"
 msgstr "Para"
@@ -3056,37 +3056,37 @@ msgstr ""
 "Chequear previamente que lo solicitado no haya sido previamente publicado en "
 "la web del <strong>organismo</strong>"
 
-#: froide/foirequest/templates/foirequest/request.html:257
+#: froide/foirequest/templates/foirequest/request.html:258
 msgid "Request Subject"
 msgstr "Título del pedido"
 
-#: froide/foirequest/templates/foirequest/request.html:267
+#: froide/foirequest/templates/foirequest/request.html:268
 msgid "Your Request:"
 msgstr "Tu pedido:"
 
-#: froide/foirequest/templates/foirequest/request.html:289
+#: froide/foirequest/templates/foirequest/request.html:290
 #: froide/foirequest/templates/foirequest/snippets/message.html:138
 msgid "[... Show complete request text]"
 msgstr "[... Mostrar el texto completo del pedido]"
 
-#: froide/foirequest/templates/foirequest/request.html:290
+#: froide/foirequest/templates/foirequest/request.html:291
 #: froide/foirequest/templates/foirequest/snippets/message.html:139
 msgid "Kind Regards,"
 msgstr "Saludos,"
 
-#: froide/foirequest/templates/foirequest/request.html:302
+#: froide/foirequest/templates/foirequest/request.html:303
 msgid "Your first name"
 msgstr "Tu nombre"
 
-#: froide/foirequest/templates/foirequest/request.html:309
+#: froide/foirequest/templates/foirequest/request.html:310
 msgid "Your last name"
 msgstr "Tu apellido"
 
-#: froide/foirequest/templates/foirequest/request.html:341
+#: froide/foirequest/templates/foirequest/request.html:342
 msgid "Your post address"
 msgstr "Tu domicilio postal"
 
-#: froide/foirequest/templates/foirequest/request.html:399
+#: froide/foirequest/templates/foirequest/request.html:400
 msgid ""
 "Do you want to make sure that the information you are requesting isn't "
 "already available?"
@@ -3094,57 +3094,57 @@ msgstr ""
 "¿Quieres asegurarte de que la información que estás solicitando no se "
 "encuentre ya disponible?"
 
-#: froide/foirequest/templates/foirequest/request.html:404
+#: froide/foirequest/templates/foirequest/request.html:405
 msgid "Similar Requests"
 msgstr "Pedidos similares"
 
-#: froide/foirequest/templates/foirequest/request.html:409
+#: froide/foirequest/templates/foirequest/request.html:410
 msgid "None found"
 msgstr "Sin coincidencias"
 
-#: froide/foirequest/templates/foirequest/request.html:416
+#: froide/foirequest/templates/foirequest/request.html:417
 msgid "Related Websites"
 msgstr "Sitios relacionados"
 
-#: froide/foirequest/templates/foirequest/request.html:422
+#: froide/foirequest/templates/foirequest/request.html:423
 #, python-format
 msgid "Search this site for %(topic)s"
 msgstr "Buscar en este sitio por %(topic)s"
 
-#: froide/foirequest/templates/foirequest/request.html:429
+#: froide/foirequest/templates/foirequest/request.html:430
 msgid "Explore other requests made to this Public Body"
 msgstr "Ver otros pedidos realizados a este organismo"
 
-#: froide/foirequest/templates/foirequest/request.html:436
+#: froide/foirequest/templates/foirequest/request.html:437
 msgid "Try a Web Search for your topic"
 msgstr "Intenta una búsqueda en la web sobre este tema"
 
-#: froide/foirequest/templates/foirequest/request.html:464
+#: froide/foirequest/templates/foirequest/request.html:465
 msgid "Review and Submit"
 msgstr "Revisar y enviar"
 
-#: froide/foirequest/templates/foirequest/request.html:476
+#: froide/foirequest/templates/foirequest/request.html:477
 msgid "Review your Request and Submit"
 msgstr "Revisar y enviar tu pedido"
 
-#: froide/foirequest/templates/foirequest/request.html:487
+#: froide/foirequest/templates/foirequest/request.html:488
 #: froide/foirequest/templates/foirequest/snippets/message.html:10
 msgid "From"
 msgstr "De"
 
-#: froide/foirequest/templates/foirequest/request.html:500
+#: froide/foirequest/templates/foirequest/request.html:501
 msgid "Please use proper spelling."
 msgstr "Por favor, revise su ortografía"
 
-#: froide/foirequest/templates/foirequest/request.html:501
+#: froide/foirequest/templates/foirequest/request.html:502
 msgid "Please stay polite."
 msgstr "Por favor, sea amable"
 
-#: froide/foirequest/templates/foirequest/request.html:506
+#: froide/foirequest/templates/foirequest/request.html:507
 msgid "edit your request again"
 msgstr "Edite su pedido nuevamente"
 
-#: froide/foirequest/templates/foirequest/request.html:510
+#: froide/foirequest/templates/foirequest/request.html:511
 msgid "Submit Request"
 msgstr "Enviar pedido"
 
@@ -4952,19 +4952,26 @@ msgid ""
 "GitHub</a>."
 msgstr ""
 
-#: froide/templates/base.html:159
+#: froide/templates/base.html:144
+#, python-format
+msgid ""
+"You can find peer support making freedom of information requests from our <a "
+"href=\"%(fb_page)s\">Facebook page</a>"
+msgstr ""
+
+#: froide/templates/base.html:162
 msgid "About"
 msgstr "Acerca"
 
-#: froide/templates/base.html:164 froide/templates/help/base.html:5
+#: froide/templates/base.html:167 froide/templates/help/base.html:5
 msgid "Help"
 msgstr "Ayuda"
 
-#: froide/templates/base.html:166
+#: froide/templates/base.html:169
 msgid "Terms of Use"
 msgstr "Términos de uso"
 
-#: froide/templates/base.html:169
+#: froide/templates/base.html:172
 msgid "Privacy Statement"
 msgstr "Aviso de privacidad"
 

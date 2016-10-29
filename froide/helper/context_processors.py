@@ -12,5 +12,6 @@ def site_settings(request):
         "SITE_URL": settings.SITE_URL,
         "CURRENT_LANGUAGE_CODE": getattr(
             request, 'LANGUAGE_CODE', settings.LANGUAGE_CODE
-        )
+        ),
+        "fb_page": getattr(settings, "FACEBOOK_PAGE")
     }

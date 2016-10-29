@@ -140,6 +140,9 @@
         <p>
           {% blocktrans %}Froide is a free and Open Source Project by <a href="http://www.okfn.org">the Open Knowledge Foundation</a>. If you want to support Froide, please visit the <a href="https://github.com/stefanw/froide">repository on GitHub</a>.{% endblocktrans %}
         </p>
+	{% if fb_page %}
+	  <p>{% blocktrans %}You can find peer support making freedom of information requests from our <a href="{{ fb_page }}">Facebook page</a>{% endblocktrans %}</p>
+	{% endif %}
         {% endblock %}
       </div>
       <div class="col-lg-3">

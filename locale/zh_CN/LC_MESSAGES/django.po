@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: froide\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-29 11:20+0200\n"
+"POT-Creation-Date: 2016-10-29 14:43+0200\n"
 "PO-Revision-Date: 2015-11-27 16:57+0000\n"
 "Last-Translator: stefanw <stefanwehrmeyer@gmail.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/ddie/froide/"
@@ -202,7 +202,7 @@ msgid "Passwords do not match!"
 msgstr "密码不匹配！"
 
 #: froide/account/forms.py:164
-#: froide/foirequest/templates/foirequest/request.html:329
+#: froide/foirequest/templates/foirequest/request.html:330
 msgid "Your email address"
 msgstr "您的邮件地址"
 
@@ -351,7 +351,7 @@ msgstr "搜索"
 #: froide/foirequest/forms.py:184 froide/foirequest/forms.py:253
 #: froide/foirequest/forms.py:465 froide/foirequest/forms.py:468
 #: froide/foirequest/models.py:1184
-#: froide/foirequest/templates/foirequest/request.html:491
+#: froide/foirequest/templates/foirequest/request.html:492
 #: froide/foirequest/templates/foirequest/snippets/message.html:49
 msgid "Subject"
 msgstr "主题"
@@ -1115,7 +1115,7 @@ msgid "Sending Public Body"
 msgstr "发送到公共机构中"
 
 #: froide/foirequest/forms.py:182
-#: froide/foirequest/templates/foirequest/request.html:483
+#: froide/foirequest/templates/foirequest/request.html:484
 #: froide/foirequest/templates/foirequest/snippets/message.html:66
 msgid "To"
 msgstr "到"
@@ -2935,93 +2935,93 @@ msgstr "在您的请求中，请 <strong>不要包括</strong> 个人信息。"
 msgid "Do <strong>not ask</strong> for personal information."
 msgstr "请<strong>不要询问</strong>个人信息。"
 
-#: froide/foirequest/templates/foirequest/request.html:257
+#: froide/foirequest/templates/foirequest/request.html:258
 msgid "Request Subject"
 msgstr "请求主题"
 
-#: froide/foirequest/templates/foirequest/request.html:267
+#: froide/foirequest/templates/foirequest/request.html:268
 msgid "Your Request:"
 msgstr "您的请求："
 
-#: froide/foirequest/templates/foirequest/request.html:289
+#: froide/foirequest/templates/foirequest/request.html:290
 #: froide/foirequest/templates/foirequest/snippets/message.html:138
 msgid "[... Show complete request text]"
 msgstr "[......显示完整的请求文本]"
 
-#: froide/foirequest/templates/foirequest/request.html:290
+#: froide/foirequest/templates/foirequest/request.html:291
 #: froide/foirequest/templates/foirequest/snippets/message.html:139
 msgid "Kind Regards,"
 msgstr "亲切的问题后，"
 
-#: froide/foirequest/templates/foirequest/request.html:302
+#: froide/foirequest/templates/foirequest/request.html:303
 msgid "Your first name"
 msgstr "您的名字"
 
-#: froide/foirequest/templates/foirequest/request.html:309
+#: froide/foirequest/templates/foirequest/request.html:310
 msgid "Your last name"
 msgstr "您的姓"
 
-#: froide/foirequest/templates/foirequest/request.html:341
+#: froide/foirequest/templates/foirequest/request.html:342
 msgid "Your post address"
 msgstr "您的邮寄地址"
 
-#: froide/foirequest/templates/foirequest/request.html:399
+#: froide/foirequest/templates/foirequest/request.html:400
 msgid ""
 "Do you want to make sure that the information you are requesting isn't "
 "already available?"
 msgstr "您是否想要确认您请求的信息还未不可用？"
 
-#: froide/foirequest/templates/foirequest/request.html:404
+#: froide/foirequest/templates/foirequest/request.html:405
 msgid "Similar Requests"
 msgstr "相似的请求"
 
-#: froide/foirequest/templates/foirequest/request.html:409
+#: froide/foirequest/templates/foirequest/request.html:410
 msgid "None found"
 msgstr "没有任何发现"
 
-#: froide/foirequest/templates/foirequest/request.html:416
+#: froide/foirequest/templates/foirequest/request.html:417
 msgid "Related Websites"
 msgstr "相关网站"
 
-#: froide/foirequest/templates/foirequest/request.html:422
+#: froide/foirequest/templates/foirequest/request.html:423
 #, python-format
 msgid "Search this site for %(topic)s"
 msgstr "在该网站搜索%(topic)s"
 
-#: froide/foirequest/templates/foirequest/request.html:429
+#: froide/foirequest/templates/foirequest/request.html:430
 msgid "Explore other requests made to this Public Body"
 msgstr "搜索向该公共机构提出的其他请求"
 
-#: froide/foirequest/templates/foirequest/request.html:436
+#: froide/foirequest/templates/foirequest/request.html:437
 msgid "Try a Web Search for your topic"
 msgstr "尝试网络搜索您的主题"
 
-#: froide/foirequest/templates/foirequest/request.html:464
+#: froide/foirequest/templates/foirequest/request.html:465
 msgid "Review and Submit"
 msgstr "浏览和提交"
 
-#: froide/foirequest/templates/foirequest/request.html:476
+#: froide/foirequest/templates/foirequest/request.html:477
 msgid "Review your Request and Submit"
 msgstr "浏览您的请求并且提交"
 
-#: froide/foirequest/templates/foirequest/request.html:487
+#: froide/foirequest/templates/foirequest/request.html:488
 #: froide/foirequest/templates/foirequest/snippets/message.html:10
 msgid "From"
 msgstr "来源于"
 
-#: froide/foirequest/templates/foirequest/request.html:500
+#: froide/foirequest/templates/foirequest/request.html:501
 msgid "Please use proper spelling."
 msgstr "请使用适当的拼写。"
 
-#: froide/foirequest/templates/foirequest/request.html:501
+#: froide/foirequest/templates/foirequest/request.html:502
 msgid "Please stay polite."
 msgstr "请保持礼貌。"
 
-#: froide/foirequest/templates/foirequest/request.html:506
+#: froide/foirequest/templates/foirequest/request.html:507
 msgid "edit your request again"
 msgstr "再次编辑您的请求"
 
-#: froide/foirequest/templates/foirequest/request.html:510
+#: froide/foirequest/templates/foirequest/request.html:511
 msgid "Submit Request"
 msgstr "提交请求"
 
@@ -4743,19 +4743,26 @@ msgid ""
 "GitHub</a>."
 msgstr ""
 
-#: froide/templates/base.html:159
+#: froide/templates/base.html:144
+#, python-format
+msgid ""
+"You can find peer support making freedom of information requests from our <a "
+"href=\"%(fb_page)s\">Facebook page</a>"
+msgstr ""
+
+#: froide/templates/base.html:162
 msgid "About"
 msgstr "关于"
 
-#: froide/templates/base.html:164 froide/templates/help/base.html:5
+#: froide/templates/base.html:167 froide/templates/help/base.html:5
 msgid "Help"
 msgstr "帮助"
 
-#: froide/templates/base.html:166
+#: froide/templates/base.html:169
 msgid "Terms of Use"
 msgstr "使用条款"
 
-#: froide/templates/base.html:169
+#: froide/templates/base.html:172
 msgid "Privacy Statement"
 msgstr "隐私声明"
 

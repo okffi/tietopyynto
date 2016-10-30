@@ -3,12 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Translators:
 # apoikola <antti.poikola@gmail.com>, 2013-2014
 # apoikola <antti.poikola@gmail.com>, 2013
 # jaakko <jaakko.korhonen@gmail.com>, 2014
 # jaakko <jaakko.korhonen@gmail.com>, 2014-2015
 # Tomi Toivio <tomi@sange.fi>, 2014-2015
+# Mika Honkanen <mygee7@gmail.com>, 2016-
 msgid ""
 msgstr ""
 "Project-Id-Version: froide\n"
@@ -58,7 +58,7 @@ msgstr "Lähetä viesti käyttäjille"
 
 #: froide/account/admin.py:144
 msgid "Sessions deleted."
-msgstr ""
+msgstr "Sessio poistettu."
 
 #: froide/account/admin.py:146
 msgid "Delete sessions of users"
@@ -555,7 +555,7 @@ msgstr "Viimeisimmät tapahtumat"
 #: froide/foirequest/templates/foirequest/snippets/request_item_inner.html:19
 #, python-format
 msgid "%(time)s ago"
-msgstr "%(time) sitten"
+msgstr "%(time) s sitten"
 
 #: froide/account/templates/account/settings.html:6
 msgid "Account Settings"
@@ -563,11 +563,11 @@ msgstr "Käyttäjätilin asetukset"
 
 #: froide/account/templates/account/settings.html:12
 msgid "Your name:"
-msgstr "Nimi:"
+msgstr "Nimesi:"
 
 #: froide/account/templates/account/settings.html:17
 msgid "Your Organisation:"
-msgstr "Organisaati:"
+msgstr "Organisaatiosi:"
 
 #: froide/account/templates/account/settings.html:24
 msgid "Account Privacy:"
@@ -600,15 +600,15 @@ msgstr "Muuta salasanasi"
 
 #: froide/account/templates/account/settings.html:70
 msgid "Change password"
-msgstr "Muuta salasana"
+msgstr "Vaihda salasana"
 
 #: froide/account/templates/account/settings.html:79
 msgid "Delete your account"
-msgstr "Lopeta käyttäjätilisi"
+msgstr "Poista käyttäjätilisi"
 
 #: froide/account/templates/account/settings.html:85
 msgid "Danger: deleting your account cannot be undone."
-msgstr "Varoitus: käyttäjätilin lopettaminen on peruuttamaton toiminto."
+msgstr "Varoitus: käyttäjätilin poistamista ei voi perua."
 
 #: froide/account/templates/account/settings.html:92
 msgid ""
@@ -620,7 +620,7 @@ msgstr ""
 
 #: froide/account/templates/account/settings.html:96
 msgid "Delete account"
-msgstr "Lopeta käyttäjätili"
+msgstr "Poista käyttäjätili"
 
 #: froide/account/templates/account/show.html:8
 msgid "Your Account"

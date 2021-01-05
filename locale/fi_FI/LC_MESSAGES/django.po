@@ -2093,7 +2093,7 @@ msgstr "%(site_name)s: Pyyntö on pysäytetty"
 #: froide/foirequest/signals.py:74
 #, python-format
 msgid "%(site_name)s: New reply to your request"
-msgstr "%(site_name)s: Uuusi vastaus tietopyyntöösi"
+msgstr "%(site_name)s: Uusi vastaus tietopyyntöösi"
 
 #: froide/foirequest/signals.py:95
 #, python-format
